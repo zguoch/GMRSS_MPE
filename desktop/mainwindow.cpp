@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     // 暂时用不到右边的文本框，隐藏掉
     ui->splitter->setSizes(QList<int>() << 1 << 0);
     //round progress bar
-    // ui->roundProgressBar->setVisible(false);
+    ui->roundProgressBar->setVisible(false);
     ui->roundProgressBar->setDecimals(0);
     QPalette pal = palette();
     // set background
@@ -84,4 +84,9 @@ void MainWindow::initRenderWindow()
     ren->TexturedBackgroundOn();
     this->ui->qvtkWidget2->GetRenderWindow()->AddRenderer(ren);
     this->ui->qvtkWidget2->GetRenderWindow()->Render();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+
 }

@@ -11,7 +11,7 @@ env:
   BUILD_PLATFORM: x64
   PYTHON_PATH: C:/hostedtoolcache/windows/Python/3.8.8/x64
   BASIC_PYTHON: 3.8
-  HOME: D:/a/saltwatereos/saltwatereos
+  HOME: D:/a/GMRSS_MPE/GMRSS_MPE
   AppInstaller: GMRSS_MPE-Windows-Installer
 jobs:
   buildApp:
@@ -97,7 +97,7 @@ jobs:
         # if: ${{ matrix.python.version == env.BASIC_PYTHON }}
         uses: actions/upload-artifact@v2
         with:
-          name: swEOS_windows_${{env.SHORT_SHA}}
+          name: GMRSS_MPE_windows_${{env.SHORT_SHA}}
           path: |
             ${{env.HOME}}/desktop/build/${{env.AppInstaller}}.exe
             ${{env.HOME}}/desktop/build/${{env.AppInstaller}}.zip

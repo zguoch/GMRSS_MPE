@@ -1,0 +1,27 @@
+/**
+ * @file GMRSS_MPEVersion.h.in
+ * @author Zhikui Guo (zguo@geomar.de)
+ * @brief Version config
+ * @version 0.1
+ * @date 2021-03-15
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
+#ifndef GMRSS_MPE_VERSION_H
+#define GMRSS_MPE_VERSION_H
+
+#define GMRSS_MPE_MAJOR_VERSION ${GMRSS_MPE_MAJOR_VERSION}
+#define GMRSS_MPE_MINOR_VERSION ${GMRSS_MPE_MINOR_VERSION}
+#define GMRSS_MPE_PATCH_VERSION ${GMRSS_MPE_PATCH_VERSION}
+#define GMRSS_MPE_EXTRA_VERSION "${GMRSS_MPE_EXTRA_VERSION}"
+#define GMRSS_MPE_VERSION       "${GMRSS_MPE_VERSION}"
+#define GMRSS_MPE_DATE          "${GMRSS_MPE_DATE}"
+#define GMRSS_MPE_HOST          "${GMRSS_MPE_HOST}"
+#define GMRSS_MPE_PACKAGER      "${GMRSS_MPE_PACKAGER}"
+#define GMRSS_MPE_OS            "${GMRSS_MPE_OS}"
+#define GMRSS_MPE_SHORT_LICENSE "${GMRSS_MPE_SHORT_LICENSE}"
+#define GMRSS_MPE_QT_VERSION      "${GMRSS_MPE_QT_VERSION}"
+#define GMRSS_MPE_VTK_VERSION       "${GMRSS_MPE_VTK_VERSION}"
+
+#endif

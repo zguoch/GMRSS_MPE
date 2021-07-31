@@ -1,25 +1,15 @@
 # 0. CMake Minimum version
-cmake_minimum_required (VERSION 2.12)
-if (POLICY CMP0086)
-  # cmake warns if loaded from a min-3.0-required parent dir, so silence the warning:
-  cmake_policy(SET CMP0086 NEW)
-endif()
-if (POLICY CMP0078)
-  cmake_policy(SET CMP0078 NEW)
-endif()
-if (POLICY CMP0042)
-  cmake_policy(SET CMP0042 NEW)
-endif()
+cmake_minimum_required(VERSION 3.3...3.12 FATAL_ERROR)
 
-project(GMRSSofMPE CXX C)
-set(GMRSS_MPE_LIB_PATH "../Library")
+
+set(PROGRAM_NAME GMRSSofMPE)
+
+project(SaltWaterEOS LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(GMRSS_MPE_LIB_PATH "../Library/lib")
 set(GMRSS_MPE_LIB_NAME "GMRSS_MPE")
-
-if(${CMAKE_VERSION} VERSION_LESS "3.3") 
-else()
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
 
 set(GMRSS_MPE_MAJOR_VERSION 1)
 set(GMRSS_MPE_MINOR_VERSION 7)
@@ -43,30 +33,84 @@ set(GMRSS_MPE_VERSION "${GMRSS_MPE_MAJOR_VERSION}.${GMRSS_MPE_MINOR_VERSION}")
 set(GMRSS_MPE_VERSION "${GMRSS_MPE_VERSION}.${GMRSS_MPE_PATCH_VERSION}${GMRSS_MPE_EXTRA_VERSION}")
 set(GMRSS_MPE_SHORT_LICENSE "GNU General Public License")
 
-#2. Source code dir
-aux_source_directory(. SRC_MAIN)
-# Head files dir
-include_directories(src include)
-# source
-add_subdirectory(src)
+if(NOT DATE)
+  string(TIMESTAMP DATE "%Y-%m-%d")
+endif()
+set(GMRSS_MPE_DATE "${DATE}")
 
-# include path 
-INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include ${GMRSS_MPE_LIB_PATH}/include)
-link_directories(${GMRSS_MPE_LIB_PATH}/lib "/usr/local/lib")
-# standalone executable program
-add_executable(${PROJECT_NAME}  "${PROJECT_SOURCE_DIR}/src/main.cpp")
-target_link_libraries(${PROJECT_NAME} ${GMRSS_MPE_LIB_NAME})
-# 安装动态库路径
-install (TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+if(NOT GMRSS_MPE_HOST)
+  execute_process(COMMAND hostname OUTPUT_VARIABLE HOSTNAME
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(NOT HOSTNAME)
+    set(HOSTNAME "unknown")
+  endif()
+  set(GMRSS_MPE_HOST "${HOSTNAME}")
+endif()
+
+if(NOT GMRSS_MPE_PACKAGER)
+  execute_process(COMMAND whoami OUTPUT_VARIABLE PACKAGER
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+  if(NOT PACKAGER)
+    set(PACKAGER "unknown")
+  endif()
+  string(REPLACE "\\" " " PACKAGER ${PACKAGER})
+  set(GMRSS_MPE_PACKAGER "${PACKAGER}")
+endif()
+
+# Using OpenMP
+include_directories(/usr/local/Cellar/libomp/11.0.0/include /usr/local/Cellar/libomp/11.1.0/include)
+find_package(OpenMP REQUIRED)
+if(APPLE)
+    set(CMAKE_C_COMPILER clang)
+    set(CMAKE_CXX_COMPILER clang++)
+
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang\$")
+        set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+        set(OpenMP_C_LIB_NAMES "omp")
+        set(OpenMP_omp_LIBRARY omp)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang\$")
+        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+        set(OpenMP_CXX_LIB_NAMES "omp")
+        set(OpenMP_omp_LIBRARY omp)
+    endif()
+endif()
+if(OPENMP_FOUND)
+    message("OPENMP FOUND")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+#windows vs2017 doesn't need opm library link 
+set(LIBomp "")
+if (APPLE)
+  set(LIBomp "omp")
+endif()
+
+
+#2. Source code dir
+
+# add H2ONaCl source and library 
+include_directories(../Library/include)
+link_directories(${GMRSS_MPE_LIB_PATH} "../Library/lib" "/usr/local/lib")
+aux_source_directory(. SRC_MAIN)
+set( Srcs_bash ./GMRSS_MPEbash.cpp ./MultiProgressBar.cpp ./getopt.cpp)
+set( Hdrs_bash ./GMRSS_MPEbash.h ./MultiProgressBar.h ./getopt.h)
+
+# add Executable target
+add_executable(${PROGRAM_NAME}  ${Srcs_bash}  main.cpp)
+
+target_link_libraries(${PROGRAM_NAME} ${GMRSS_MPE_LIB_NAME} ${LIBomp})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../GMRSS_MPEVersion.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/GMRSS_MPEVersion.h)
 
 message(STATUS "")
-message(STATUS "SWEOS ${GMRSS_MPE_VERSION} has been configured for ${GMRSS_MPE_OS}")
+message(STATUS "GMRSS_MPE ${GMRSS_MPE_VERSION} has been configured for ${GMRSS_MPE_OS}")
 message(STATUS "")
 message(STATUS " * Build type: " ${CMAKE_BUILD_TYPE})
 message(STATUS " * C compiler: " ${CMAKE_C_COMPILER})
 message(STATUS " * C++ compiler: " ${CMAKE_CXX_COMPILER})
 message(STATUS " * Install prefix: " ${CMAKE_INSTALL_PREFIX})
 message(STATUS "")
-# ===================================================================================================
-
-

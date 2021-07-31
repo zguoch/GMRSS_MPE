@@ -1,0 +1,8 @@
+build/*
+CMakeLists.txt.user
+test/
+Icons/paraview/
+sign.sh
+install
+swEOSVersion.h
+swEOSConfig.h

@@ -89,9 +89,9 @@ jobs:
       #     cd ${{env.HOME}}/desktop/build
       #     7z a -tzip GMRSSofMPE-Windows-Installer.zip ${{env.HOME}}/install/*
       
-      # debug workflow
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # # debug workflow
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       - name: upload app
         # if: ${{ matrix.python.version == env.BASIC_PYTHON }}

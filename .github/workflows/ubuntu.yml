@@ -1,18 +1,18 @@
 name: Ubuntu
 on: 
   push:
-    branches: xxx
+    branches: master
     tags:
       - 'V*'
 env:
-  HOME: /home/runner/work/saltwatereos/saltwatereos
+  HOME: /home/runner/work/GMRSS_MPE/GMRSS_MPE
 jobs:
   buildApp:
     name: library
     # ubuntu-latest (ubuntu-20.04: glibc 2.31), ubuntu-18.04 (glibc 2.27), ubuntu-16.04 (glibc 2.23)
     runs-on: ubuntu-18.04
     env:
-      AppInstaller: swEOS-Linux-Installer
+      AppInstaller: GMRSS_MPE-Linux-Installer
       Path_Pythons: /opt/hostedtoolcache/Python
     steps:
       # checkout source code
@@ -31,14 +31,14 @@ jobs:
       - name: install dependence
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y tcl-dev
+          # sudo apt-get install -y tcl-dev
           sudo snap install cqtdeployer
-      # install dependencies, e.g. VTK, swig
-      - name: install dependencies
-        run: |
-          git clone https://github.com/zguoch/dependencies_swEOS.git
-          cd dependencies_swEOS/ubuntu
-          unzip -qq VTK8.2.zip
+      # # install dependencies, e.g. VTK, swig
+      # - name: install dependencies
+      #   run: |
+      #     git clone https://github.com/zguoch/dependencies_swEOS.git
+      #     cd dependencies_swEOS/ubuntu
+      #     unzip -qq VTK8.2.zip
       
       # get short SHA of commit 
       - name: Add SHORT_SHA env property with commit short sha
@@ -52,7 +52,7 @@ jobs:
           echo ${{ github.ref }}
           echo "commit id short" ${SHORT_SHA}
           echo "github tag: " ${GIT_TAG}
-          python --version
+          # python --version
           ldd --version
       # debug workflow
       # - name: install oh my zsh
@@ -63,22 +63,22 @@ jobs:
       #   uses: mxschmitt/action-tmate@v3
 
       # cmake library
-      - name: build swEOS library
+      - name: build GMRSS_MPE library
         run: |
           mkdir Library/build
           cd Library/build
-          cmake -DBuild_API_tcl=OFF  ..
+          cmake ..
           make install
           cd ../..
       
       # build cmd app
-      - name: build swEOS cmd app
+      - name: build GMRSS_MPE cmd app
         run: |
           mkdir -p commandline/build
           cd commandline/build
           cmake ..
           make 
-          chmod 755 swEOS
+          chmod 755 GMRSSofMPE
           
       # build desktop app
       - name: build desktop app
@@ -86,14 +86,14 @@ jobs:
           cd ${{env.HOME}}
           mkdir desktop/build
           cd desktop/build
-          cmake -DVTK_DIR=${{env.HOME}}/dependencies_swEOS/ubuntu/VTK8.2/lib/cmake/vtk-8.2 -DCMAKE_INSTALL_PREFIX=./install ..
+          cmake -DCMAKE_INSTALL_PREFIX=./install ..
           make 
           make install
-          cqtdeployer -bin install/bin/swEOS -qmake ${Qt5_DIR}/bin/qmake -targetDir  install
-          chmod 755 install/swEOS.sh
-          chmod 755 install/bin/swEOS
+          cqtdeployer -bin install/bin/GMRSSofMPE -qmake ${Qt5_DIR}/bin/qmake -targetDir  install
+          chmod 755 install/GMRSSofMPE.sh
+          chmod 755 install/bin/GMRSSofMPE
           mkdir install/CommandLineTool
-          cp ../../commandline/build/swEOS install/CommandLineTool
+          cp ../../commandline/build/GMRSSofMPE install/CommandLineTool
           # make package
       # package
       - name: package
@@ -110,20 +110,8 @@ jobs:
       # upload artifacts
       - uses: actions/upload-artifact@v2
         with:
-          name: swEOS_ubuntu_${{env.SHORT_SHA}}
+          name: GMRSS_MPE_ubuntu_${{env.SHORT_SHA}}
           path: desktop/build/${{env.AppInstaller}}.zip
-
-      # Build Python API with different python library versions
-      - name: build python APIs
-        run: |
-          bash buildPythonAPIs.sh ${{ env.Path_Pythons }} so "-DBuild_API_tcl=OFF"
-          cp -rf Library/API/python API_Python_Linux
-          zip -r API_Python_Linux.zip API_Python_Linux
-      # upload python APIs with all python versions
-      - uses: actions/upload-artifact@v2
-        with:
-          name: API_Python_Linux_${{ env.SHORT_SHA }}
-          path: API_Python_Linux.zip
 
       # tag 上传Release
       - name: uploadRelease
@@ -133,16 +121,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: desktop/build/${{env.AppInstaller}}.zip
           asset_name: ${{env.AppInstaller}}.zip
-          tag: ${{ github.ref }}
-          overwrite: true
-
-      # tag upload python APIs
-      - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: API_Python_Linux.zip
-          asset_name: API_Python_Linux.zip
           tag: ${{ github.ref }}
           overwrite: true

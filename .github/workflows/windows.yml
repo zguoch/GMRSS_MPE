@@ -45,10 +45,6 @@ jobs:
           echo ${{ github.ref }}
           echo "commit id short" ${SHORT_SHA}
 
-      # debug workflow
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-
       # build GMRSS_MPE library
       - name: build library
         working-directory: ${{ env.GITHUB_WORKSPACE }}
@@ -92,6 +88,10 @@ jobs:
         run: |
           cd ${{env.HOME}}/desktop/build
           7z a -tzip GMRSS_MPE-Windows-Installer.zip ${{env.HOME}}/install/*
+      
+      # debug workflow
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
 
       - name: upload app
         # if: ${{ matrix.python.version == env.BASIC_PYTHON }}

@@ -38,12 +38,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     
-    void init_Meter(Meter* meter,double min, double max, double value,int valuePrecision,
-            double majorTick, double minorTick,int labelPrecision,
-            QString label, QString unit,double radius=60);
-    void updateMeter(Meter* meter,double value);
-    void init_Meters();
-    void updateMeters();
     void initRenderWindow();
 
 private:

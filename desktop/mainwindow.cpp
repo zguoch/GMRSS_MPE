@@ -9,10 +9,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     statusBar()->showMessage(tr("G&MRSSofMPE version: ")+GMRSS_MPE_VERSION);
-    //three meters
-    init_Meters();
-    updateMeters();
-
+    // 暂时用不到右边的文本框，隐藏掉
+    ui->splitter->setSizes(QList<int>() << 1 << 0);
     //round progress bar
     // ui->roundProgressBar->setVisible(false);
     ui->roundProgressBar->setDecimals(0);
@@ -55,83 +53,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::init_Meters()
-{
-    init_Meter(ui->meter_firstVar,5, 1000, 316,0,100,20,0, tr("Pressure"), tr("bar"));
-    init_Meter(ui->meter_thirdVar,0, 100, 3.2,1,10,2,0, tr("Salinity"), tr("wt. %"));
-    if(ui->comboBox->currentIndex()==0)
-    {
-        init_Meter(ui->meter_secondVar,0, 1000, 100,0,100,20,0, tr("Temperature"), UNIT_T);
-    }else if(ui->comboBox->currentIndex()==1)
-    {
-        init_Meter(ui->meter_secondVar,0, 4.2, 2,2,0.5,0.1,1, tr("Enthalpy"), tr("MJ/kg"));
-    }
-}
-void MainWindow::init_Meter(Meter* meter,double min, double max, double value,int valuePrecision,
-                            double majorTick, double minorTick,int labelPrecision, QString label, QString unit,double radius)
-{
-    meter->setMinValue( min);
-    meter->setMaxValue( max);
-    meter->setValue( value );
-    meter->setBackgroundColor( Qt::darkGray );
-    meter->setNeedleColor( Qt::blue );
-    meter->setTextColor( Qt::lightGray );
-    meter->setGridColor( Qt::white );
-    meter->setLabelTextColor(Qt::yellow);
-    meter->setLabel( label );
-    meter->setUnitsLabel( unit );
-    meter->setRadius( radius );
-    meter->setStartScaleAngle( 35 );
-    meter->setStopScaleAngle( 325 );
-    meter->setScaleStep( minorTick );
-    meter->setScaleGridStep( majorTick );
-    meter->setDrawValue( true );
-    meter->setDrawGridValues( true );
-    meter->setDrawValuePrecision( valuePrecision );
-    meter->setScaleLabelPrecision( labelPrecision );
-//    meter->setThresholdRange( min, threshold[0], 0 );
-//    meter->setThresholdRange( threshold[0], threshold[1], 1, Qt::green );
-//    meter->setThresholdRange( threshold[1], max, 2, Qt::red );
-}
-void MainWindow::updateMeters()
-{
-    QRect geo_win=this->geometry();
-    QRect geo_meters=ui->group_Meters->geometry();
-    QRect geo_btn=ui->pushButton_2->geometry();
-    if((geo_win.width()-geo_btn.x()-geo_btn.width())<geo_meters.width())
-    {
-        ui->group_Meters->setVisible(false);
-        return;
-    }else
-    {
-        ui->group_Meters->setVisible(true);
-        ui->group_Meters->setGeometry(geo_btn.x()+120,geo_meters.y(),geo_meters.width(),geo_meters.height());
-    }
-
-   updateMeter(ui->meter_firstVar,ui->doubleSpinBox->value());
-   updateMeter(ui->meter_thirdVar,ui->doubleSpinBox_3->value()*100);
-   if(ui->comboBox->currentIndex()==0)
-   {
-       updateMeter(ui->meter_secondVar,ui->doubleSpinBox_2->value());
-   }else if(ui->comboBox->currentIndex()==1)
-   {
-       updateMeter(ui->meter_secondVar,ui->doubleSpinBox_2->value()/1000.0);
-   }
-}
-void MainWindow::updateMeter(Meter* meter,double value)
-{
-    meter->setValue(value);
-}
-
 void MainWindow::initRenderWindow()
 {
     // Geometry
     vtkNew<vtkVectorText> text;
-    text->SetText("Gravity and Magnetic Response Simulation System of\nMarine Physical Environment\n(G&MRSSofMPE)\nVersion 1.0\n\nChina University of Geosciences (Wuhan)");
+    // text->SetText("Gravity and Magnetic Response Simulation System of\nMarine Physical Environment\n(G&MRSSofMPE)\nVersion 1.0\n\nChina University of Geosciences (Wuhan)");
+    text->SetText("G&MRSSofMPE V1.0");
     vtkNew<vtkElevationFilter> elevation;
     elevation->SetInputConnection(text->GetOutputPort());
     elevation->SetLowPoint(0,0,0);
-    elevation->SetHighPoint(20,0,0);
+    elevation->SetHighPoint(10,0,0);
 
     // Mapper
     vtkNew<vtkPolyDataMapper> mapper;

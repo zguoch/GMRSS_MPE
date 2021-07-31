@@ -1,9 +1,9 @@
 name: MacOS
 on: 
   push:
-    branches: master
-    # tags:
-    #   - 'V*'
+    branches: masterxx
+    tags:
+      - 'V*'
 jobs:
   buildApp:
     name: GMRSS_MPE_MAC

@@ -186,10 +186,10 @@ include_directories(
 )
 
 # Set your files and resources here
-set( Srcs main.cpp  mainWindow.cpp qroundprogressbar.cpp  Meter.cpp)
-set( Hdrs mainWindow.h qroundprogressbar.h  Meter.h)
-set( MOC_Hdrs ui_mainWindow.h )
-set( UIs MainWindow.ui )
+set( Srcs main.cpp  mainwindow.cpp qroundprogressbar.cpp  Meter.cpp)
+set( Hdrs mainwindow.h qroundprogressbar.h  Meter.h)
+set( MOC_Hdrs ui_mainwindow.h )
+set( UIs mainwindow.ui )
 set( QRCs Icons/icons.qrc)
 set( Srcs_bash ../commandline/GMRSS_MPEbash.cpp ../commandline/MultiProgressBar.cpp ../commandline/getopt.cpp)
 set( Hdrs_bash ../commandline/GMRSS_MPEbash.h ../commandline/MultiProgressBar.h ../commandline/getopt.h)

@@ -54,13 +54,13 @@ jobs:
           echo "github tag: " ${GIT_TAG}
           # python --version
           ldd --version
-      # debug workflow
-      - name: install oh my zsh
-        run: |
-          sudo apt-get install zsh
-          sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # # debug workflow
+      # - name: install oh my zsh
+      #   run: |
+      #     sudo apt-get install zsh
+      #     sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
 
       # cmake library
       - name: build GMRSS_MPE library

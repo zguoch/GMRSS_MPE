@@ -54,7 +54,7 @@ jobs:
           echo "github tag: " ${GIT_TAG}
           # python --version
           ldd --version
-      debug workflow
+      # debug workflow
       - name: install oh my zsh
         run: |
           sudo apt-get install zsh

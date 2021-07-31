@@ -23,6 +23,7 @@ jobs:
         run: |
           # brew install tcl-tk
           # brew install swig
+          brew install qt5
           brew install libomp
           # brew install vtk@8.2
           # export LDFLAGS="-L/usr/local/opt/vtk@8.2/lib"
@@ -41,12 +42,12 @@ jobs:
           echo "commit id short" ${SHORT_SHA}
           echo "github tag: " ${GIT_TAG}
           python --version
-    # debug workflow through ssh
-      - name: install oh my zsh
-        run: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-      - uses: actions/checkout@v2
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+    # # debug workflow through ssh
+    #   - name: install oh my zsh
+    #     run: sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    #   - uses: actions/checkout@v2
+    #   - name: Setup tmate session
+    #     uses: mxschmitt/action-tmate@v3
       
       - name: compile library
         run: |
@@ -82,9 +83,9 @@ jobs:
           # codesign -vvv --deep --strict GMRSSofMPE.app 
           # hdiutil create -srcfolder GMRSSofMPE.app GMRSSofMPE.dmg
           
-      #     make package
-      #     # 第一种方案：如果用户无法打开未被验证的app，只需要在终端运行：sudo spctl --master-disable 即可
-      #     # 第二种方案：只对其中一个app进行开放：sudo xattr -r -d com.apple.quarantine /XXX/XXX.app/
+          make package
+          # 第一种方案：如果用户无法打开未被验证的app，只需要在终端运行：sudo spctl --master-disable 即可
+          # 第二种方案：只对其中一个app进行开放：sudo xattr -r -d com.apple.quarantine /XXX/XXX.app/
       # - name: package
       #   run: |
       #     mkdir GMRSSofMPE_OSX

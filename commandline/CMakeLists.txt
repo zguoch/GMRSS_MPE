@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.3...3.12 FATAL_ERROR)
 
 set(PROGRAM_NAME GMRSSofMPE)
 
-project(SaltWaterEOS LANGUAGES CXX)
+project(GMRSS_MPE LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -58,7 +58,7 @@ if(NOT GMRSS_MPE_PACKAGER)
 endif()
 
 # Using OpenMP
-include_directories(/usr/local/Cellar/libomp/11.0.0/include /usr/local/Cellar/libomp/11.1.0/include)
+include_directories(/usr/local/Cellar/libomp/11.0.0/include /usr/local/Cellar/libomp/11.1.0/include /usr/local/Cellar/libomp/12.0.1/include)
 find_package(OpenMP REQUIRED)
 if(APPLE)
     set(CMAKE_C_COMPILER clang)

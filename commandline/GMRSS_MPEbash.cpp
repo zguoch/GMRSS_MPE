@@ -50,7 +50,7 @@ namespace GMRSS_MPEbash
 
   bool cGMRSS_MPEarg::Parse(int argc, char** argv)
   {
-    
+    return false;
     return true;
   }
   

@@ -1,5 +1,5 @@
 /**
- * @file swEOSVersion.h.in
+ * @file GMRSS_MPEVersion.h.in
  * @author Zhikui Guo (zguo@geomar.de)
  * @brief Version config
  * @version 0.1
@@ -8,20 +8,20 @@
  * @copyright Copyright (c) 2021
  * 
  */
-#ifndef SWEOS_VERSION_H
-#define SWEOS_VERSION_H
+#ifndef GMRSS_MPE_VERSION_H
+#define GMRSS_MPE_VERSION_H
 
-#define SWEOS_MAJOR_VERSION 1
-#define SWEOS_MINOR_VERSION 7
-#define SWEOS_PATCH_VERSION 0
-#define SWEOS_EXTRA_VERSION "-git-605692d"
-#define SWEOS_VERSION       "1.7.0-git-605692d"
-#define SWEOS_DATE          "2021-03-23"
-#define SWEOS_HOST          "zhikuis-MacBook-Pro.local"
-#define SWEOS_PACKAGER      "zguo"
-#define SWEOS_OS            "MacOSX"
-#define SWEOS_SHORT_LICENSE "GNU General Public License"
-#define SWEOS_QT_VERSION      "5"
-#define SWEOS_VTK_VERSION       "8.2.0"
+#define GMRSS_MPE_MAJOR_VERSION 1
+#define GMRSS_MPE_MINOR_VERSION 0
+#define GMRSS_MPE_PATCH_VERSION 1
+#define GMRSS_MPE_EXTRA_VERSION "-git-50cfc97"
+#define GMRSS_MPE_VERSION       "1.0.1-git-50cfc97"
+#define GMRSS_MPE_DATE          "2021-07-31"
+#define GMRSS_MPE_HOST          "zhikuis-MacBook-Pro.local"
+#define GMRSS_MPE_PACKAGER      "zguo"
+#define GMRSS_MPE_OS            "MacOSX"
+#define GMRSS_MPE_SHORT_LICENSE "GNU General Public License"
+#define GMRSS_MPE_QT_VERSION      "5"
+#define GMRSS_MPE_VTK_VERSION       "8.2.0"
 
 #endif

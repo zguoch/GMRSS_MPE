@@ -29,13 +29,13 @@ macro(set_config_option VARNAME STRING)
   message(STATUS "Found " ${STRING})
 endmacro()
 opt(OpenMP "Enable OpenMP to parallel computing" ON)
-option(USE_VTK "whether use VTK library" OFF)
+option(USE_VTK "whether use VTK library" ON)
 set(GMRSS_MPE_LIB_PATH "../Library/lib")
 set(GMRSS_MPE_LIB_NAME "GMRSS_MPE")
 
 set(GMRSS_MPE_MAJOR_VERSION 1)
-set(GMRSS_MPE_MINOR_VERSION 7)
-set(GMRSS_MPE_PATCH_VERSION 0)
+set(GMRSS_MPE_MINOR_VERSION 0)
+set(GMRSS_MPE_PATCH_VERSION 1)
 set(GMRSS_MPE_EXTRA_VERSION "")
 set(GMRSS_MPE_EXTRA_VERSION_TEXI "${GMRSS_MPE_EXTRA_VERSION}")
 if(NOT GMRSS_MPE_RELEASE)
@@ -409,10 +409,10 @@ include(CPack)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/GMRSS_MPEConfig.h.in
                ${CMAKE_CURRENT_SOURCE_DIR}/GMRSS_MPEConfig.h)
-# configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../GMRSS_MPEVersion.h.in
-#                ${CMAKE_CURRENT_SOURCE_DIR}/GMRSS_MPEVersion.h)
-# configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../GMRSS_MPEVersion.h.in
-#                ${CMAKE_CURRENT_SOURCE_DIR}/../commandline/GMRSS_MPEVersion.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../GMRSS_MPEVersion.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/GMRSS_MPEVersion.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../GMRSS_MPEVersion.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/../commandline/GMRSS_MPEVersion.h)
 
 message(STATUS "")
 message(STATUS "GMRSS_MPE ${GMRSS_MPE_VERSION} has been configured for ${GMRSS_MPE_OS}")

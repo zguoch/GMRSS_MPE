@@ -1,7 +1,7 @@
 name: MacOS
 on: 
   push:
-    branches: masterxxx
+    branches: master
     # tags:
     #   - 'V*'
 jobs:
@@ -11,11 +11,11 @@ jobs:
     env:
       MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
       MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-      TMP_PWD: hydrothermalfoam
+      TMP_PWD: GMRSS_MPE
       APPLEDEVELOPERID_APP: ${{ secrets.APPLEDEVELOPERID_APP }}
       QT_DIR: /usr/local/Cellar/qt@5/5.15.2
       Path_Pythons: /Users/runner/hostedtoolcache/Python
-      AppInstaller: GMRSS_MPE-MacOSX-Installer
+      AppInstaller: GMRSSofMPE-MacOSX-Installer
     steps:
       # checkout source code
       - uses: actions/checkout@v2

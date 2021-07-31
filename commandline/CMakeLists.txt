@@ -11,8 +11,10 @@ if (POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-project(GMRSS_MPE CXX C)
-# project(${PROJECT_NAME} LANGUAGES CXX)
+project(GMRSSofMPE CXX C)
+set(GMRSS_MPE_LIB_PATH "../Library")
+set(GMRSS_MPE_LIB_NAME "GMRSS_MPE")
+
 if(${CMAKE_VERSION} VERSION_LESS "3.3") 
 else()
     set(CMAKE_CXX_STANDARD 11)
@@ -49,17 +51,13 @@ include_directories(src include)
 add_subdirectory(src)
 
 # include path 
-INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include )
-# 所有模块源文件
-FILE(GLOB SC_MODULES  "${PROJECT_SOURCE_DIR}/src/OceanWave.cpp")
-# 将所有模块编译为一个动态库
-add_library (${PROJECT_NAME}  ${SC_MODULES} )
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include ${GMRSS_MPE_LIB_PATH}/include)
+link_directories(${GMRSS_MPE_LIB_PATH}/lib "/usr/local/lib")
+# standalone executable program
+add_executable(${PROJECT_NAME}  "${PROJECT_SOURCE_DIR}/src/main.cpp")
+target_link_libraries(${PROJECT_NAME} ${GMRSS_MPE_LIB_NAME})
 # 安装动态库路径
-install (TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_SOURCE_DIR}/lib)
-
-# 添加可执行程序测试模块
-add_executable(OceanWave  ${Srcs_bash}  "${PROJECT_SOURCE_DIR}/src/OceanWave_test.cpp")
-target_link_libraries(OceanWave ${PROJECT_NAME})
+install (TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_SOURCE_DIR}/bin)
 
 message(STATUS "")
 message(STATUS "SWEOS ${GMRSS_MPE_VERSION} has been configured for ${GMRSS_MPE_OS}")

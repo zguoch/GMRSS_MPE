@@ -87,8 +87,9 @@ namespace GMRSS_MPEbash
     public:
         cGMRSS_MPEarg(/* args */);
         ~cGMRSS_MPEarg();
+        Par_OceanWave m_para_OceanWave;
         bool Parse(int argc, char** argv); //Parse arguments
-    
+        void runOceanWave();
     };
    
     static void StartText()

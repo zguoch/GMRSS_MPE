@@ -148,7 +148,7 @@ void MultiProgressBar::Update(vector<double> current_pos)
                  << m_colors[(k + m_defaultcolor) % m_colors.size()] << setw(3) << right << int(m_percent[k])
                  << "% " << COLOR_DEFAULT_PROGRESSBAR
                  << "[" << setw(m_maxLength_title) << left << m_title[k]
-                 << "] [" << m_colors[(k + m_defaultcolor) % m_colors.size()] << setw(10) << left << current_pos[k] << COLOR_DEFAULT_PROGRESSBAR
+                 << "]" << m_colors[(k + m_defaultcolor) % m_colors.size()] << setw(10) << left << current_pos[k] << COLOR_DEFAULT_PROGRESSBAR
                  << "]"
                  << endl;
         }

@@ -49,9 +49,9 @@ include_directories(src include)
 add_subdirectory(src)
 
 # include path 
-INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include )
+INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/../commandline )
 # 所有模块源文件
-FILE(GLOB SC_MODULES  "${PROJECT_SOURCE_DIR}/src/OceanWave.cpp")
+FILE(GLOB SC_MODULES  "${PROJECT_SOURCE_DIR}/src/OceanWave.cpp" "${PROJECT_SOURCE_DIR}/../commandline/MultiProgressBar.cpp")
 # 将所有模块编译为一个动态库
 add_library (${PROJECT_NAME}  ${SC_MODULES} )
 target_link_libraries(${PROJECT_NAME})

@@ -22,6 +22,12 @@
 #include <time.h>
 #include <memory.h>
 #include <string>
+#include <vector>
+
+#define RETURN_RESULTS_NO 0
+#define RETURN_RESULTS_ALL 1
+#define RETURN_RESULTS_LATEST 2
+
 
 // 所需参数的结构体
 struct Par_OceanWave
@@ -36,7 +42,8 @@ struct Par_OceanWave
     double U10; //海面以上10米高度风速(m/s)
     std::string fname_WaveHeight, fname_SeawaterVelocity; //数据输出的文件名
 };
-
+// 计算t0时刻的波高
+double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h);
 // 服从均匀分布的随机数生成函数
 double uniform(double a, double b);
 // 服从正态分布的随机数生成函数

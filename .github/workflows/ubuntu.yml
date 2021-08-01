@@ -33,12 +33,12 @@ jobs:
           sudo apt-get update -y
           # sudo apt-get install -y tcl-dev
           sudo snap install cqtdeployer
-      # # install dependencies, e.g. VTK, swig
-      # - name: install dependencies
-      #   run: |
-      #     git clone https://github.com/zguoch/dependencies_swEOS.git
-      #     cd dependencies_swEOS/ubuntu
-      #     unzip -qq VTK8.2.zip
+      # install dependencies, e.g. VTK, swig
+      - name: install dependencies
+        run: |
+          git clone https://github.com/zguoch/dependencies_swEOS.git
+          cd dependencies_swEOS/ubuntu
+          unzip -qq VTK8.2.zip
       
       # get short SHA of commit 
       - name: Add SHORT_SHA env property with commit short sha
@@ -86,7 +86,7 @@ jobs:
           cd ${{env.HOME}}
           mkdir desktop/build
           cd desktop/build
-          cmake -DCMAKE_INSTALL_PREFIX=./install ..
+          cmake -DVTK_DIR=${{env.HOME}}/dependencies_swEOS/ubuntu/VTK8.2/lib/cmake/vtk-8.2  -DCMAKE_INSTALL_PREFIX=./install ..
           make 
           make install
           cqtdeployer -bin install/bin/GMRSSofMPE -qmake ${Qt5_DIR}/bin/qmake -targetDir  install

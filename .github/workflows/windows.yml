@@ -1,7 +1,7 @@
 name: Windows
 on: 
   push:
-    branches: masterxx
+    branches: master
     tags:
       - 'V*'
 env:
@@ -33,6 +33,15 @@ jobs:
           host: 'windows'
           target: 'desktop'
           dir: '${{ github.workspace }}/QT/'
+
+      # install dependencies, e.g. VTK
+      - name: install dependencies
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
+        run: |
+          git clone https://github.com/zguoch/dependencies_swEOS.git
+          cd dependencies_swEOS/windows
+          unzip -qq swigwin-4.0.2.zip
+          unzip -qq VTK8.2.zip
 
       # get short SHA of commit 
       - name: Add SHORT_SHA env property with commit short sha
@@ -74,7 +83,7 @@ jobs:
           cd ${{env.HOME}}
           mkdir desktop/build
           cd desktop/build
-          cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_CONFIGURATION}} -DCMAKE_GENERATOR_PLATFORM=${{env.BUILD_PLATFORM}} -DCMAKE_INSTALL_PREFIX=${{env.HOME}}/install ..
+          cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_CONFIGURATION}} -DCMAKE_GENERATOR_PLATFORM=${{env.BUILD_PLATFORM}} -DVTK_DIR=${{env.HOME}}/dependencies_swEOS/windows/VTK8.2/lib/cmake/vtk-8.2 -DCMAKE_INSTALL_PREFIX=${{env.HOME}}/install ..
           # -DCPACK_GENERATOR=ON 
           msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} GMRSS_MPE.vcxproj
           msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} INSTALL.vcxproj

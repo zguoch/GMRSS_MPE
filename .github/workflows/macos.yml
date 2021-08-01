@@ -25,9 +25,9 @@ jobs:
           # brew install swig
           brew install qt5
           brew install libomp
-          # brew install vtk@8.2
-          # export LDFLAGS="-L/usr/local/opt/vtk@8.2/lib"
-          # export CPPFLAGS="-I/usr/local/opt/vtk@8.2/include"
+          brew install vtk@8.2
+          export LDFLAGS="-L/usr/local/opt/vtk@8.2/lib"
+          export CPPFLAGS="-I/usr/local/opt/vtk@8.2/include"
       
       # get short SHA of commit 
       - name: Add SHORT_SHA env property with commit short sha

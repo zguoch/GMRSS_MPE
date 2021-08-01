@@ -242,7 +242,7 @@ namespace GMRSS_MPEbash
     m_para_OceanWave.print();
     // 参数没问题那就运行吧
     std::vector<std::vector<std::vector<double> > > tmp_h;
-    WaveHeight(m_para_OceanWave, tmp_h); 
+    OCEANWAVE::WaveHeight(m_para_OceanWave, tmp_h); 
     // runOceanWave();
     return true;
   }

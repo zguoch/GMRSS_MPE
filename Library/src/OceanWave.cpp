@@ -4,6 +4,7 @@
 #include "OceanWave.h"
 #include "MultiProgressBar.h"
 #include "omp.h"
+#include <fstream>
 namespace OCEANWAVE
 {
 	// void Par_OceanWave::print()
@@ -87,6 +88,9 @@ namespace OCEANWAVE
 				returnResults = RETURN_RESULTS_NO;
 			}
 		}
+		// 对每一个时刻的结果进行保存
+		std::vector<std::vector<double> > wave_h(Ny);
+		for (size_t i = 0; i < Ny; i++)wave_h[i].resize(Nx);
 		// 开始计算模拟波高数据
 		omp_set_num_threads(parm.nThreads);
 		MultiProgressBar multibar(Ny*Nt,COLOR_BAR_BLUE);
@@ -120,13 +124,15 @@ namespace OCEANWAVE
 					{
 						h[it][iy][ix]=sum;
 					}
+					wave_h[ix][iy] = sum;
 				}
 				if(parm.showProgress){
 					#pragma omp critical
 					multibar.Update();
 				}
-				
 			}
+			// save result at t
+			SaveResult(parm,wave_h,t);
 		}
 		//release pointer
 		delete[] num[0]; 
@@ -134,7 +140,107 @@ namespace OCEANWAVE
 
 		return 0;
 	}
-
+	void SaveResult(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t)
+	{
+		if (parm.fmt_outputFile == "txt")
+		{
+			SaveResult_txt(parm, result, t);
+		}else if(parm.fmt_outputFile == "grd")
+		{
+			SaveResult_grd(parm, result, t);
+		}else if(parm.fmt_outputFile == "vtk")
+		{
+			SaveResult_VTK(parm, result, t);
+		}
+		else
+		{
+			std::cout<<"Error: 输出文件不支持"<<parm.fmt_outputFile<<"格式，请通过-f 指定文件格式，比如-f txt\n";
+			exit(0);
+		}
+		
+	}
+	void SaveResult_VTK(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t)
+	{
+		std::string fname_waveheight = parm.fname_WaveHeight+"_"+std::to_string(t)+"."+parm.fmt_outputFile;
+		std::ofstream fout_waveheight(fname_waveheight);
+		if(!fout_waveheight)
+		{
+			std::cout<<"Error: 打开文件失败, "<<fname_waveheight<<std::endl;
+			exit(0);
+		}
+		fout_waveheight<<"# vtk DataFile Version 2.0\n";
+		fout_waveheight<<"Sample rectilinear grid\n";
+		fout_waveheight<<"ASCII\n";
+		fout_waveheight<<"DATASET RECTILINEAR_GRID\n";
+		fout_waveheight<<"DIMENSIONS "<<result[0].size()<<" "<<result.size()<<" 1"<<"\n";
+		fout_waveheight<<"X_COORDINATES "<<result[0].size()<<" float\n";
+		for (size_t ix = 0; ix < result[0].size(); ix++)fout_waveheight<<parm.minDmax_xyzt[0][0]+ix*parm.minDmax_xyzt[0][1]<<" ";
+		fout_waveheight<<"\n";
+		fout_waveheight<<"Y_COORDINATES "<<result.size()<<" float\n";
+		for (size_t iy = 0; iy < result[0].size(); iy++)fout_waveheight<<parm.minDmax_xyzt[1][0]+iy*parm.minDmax_xyzt[1][1]<<" ";
+		fout_waveheight<<"\n";
+		fout_waveheight<<"Z_COORDINATES 1 float\n";
+		fout_waveheight<<"0 \n";
+		// wave height
+		fout_waveheight<<"POINT_DATA "<<result.size()*result[0].size()<<"\n";
+		fout_waveheight<<"SCALARS WaveHeight float\n";
+		fout_waveheight<<"LOOKUP_TABLE default\n";
+		for (size_t iy = 0; iy < result.size(); iy++)
+		{
+			for (size_t ix = 0; ix < result[0].size(); ix++)
+			{
+				fout_waveheight<<result[iy][ix]<<" ";
+			}
+			fout_waveheight<<"\n";
+		}
+		fout_waveheight.close();
+	}
+	void SaveResult_grd(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t)
+	{
+		std::string fname_waveheight = parm.fname_WaveHeight+"_"+std::to_string(t)+"."+parm.fmt_outputFile;
+		std::ofstream fout_waveheight(fname_waveheight);
+		if(!fout_waveheight)
+		{
+			std::cout<<"Error: 打开文件失败, "<<fname_waveheight<<std::endl;
+			exit(0);
+		}
+		fout_waveheight<<"DSAA\n";
+		fout_waveheight<<result[0].size()<<" "<<result.size()<<"\n";
+		fout_waveheight<<parm.minDmax_xyzt[0][0]<<" "<<parm.minDmax_xyzt[0][2]<<"\n";
+		fout_waveheight<<parm.minDmax_xyzt[1][0]<<" "<<parm.minDmax_xyzt[1][2]<<"\n";
+		fout_waveheight<<0<<" "<<1<<"\n";
+		for (size_t iy = 0; iy < result.size(); iy++)
+		{
+			for (size_t ix = 0; ix < result[0].size(); ix++)
+			{
+				fout_waveheight<<result[iy][ix]<<" ";
+			}
+			fout_waveheight<<"\n";
+		}
+		fout_waveheight.close();
+	}
+	void SaveResult_txt(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t)
+	{
+		std::string fname_waveheight = parm.fname_WaveHeight+"_"+std::to_string(t)+"."+parm.fmt_outputFile;
+		std::ofstream fout_waveheight(fname_waveheight);
+		if(!fout_waveheight)
+		{
+			std::cout<<"Error: 打开文件失败, "<<fname_waveheight<<std::endl;
+			exit(0);
+		}
+		for (size_t iy = 0; iy < result.size(); iy++)
+		{
+			for (size_t ix = 0; ix < result[0].size(); ix++)
+			{
+				fout_waveheight<<parm.minDmax_xyzt[0][0]+ix*parm.minDmax_xyzt[0][1]<<" "
+							   <<parm.minDmax_xyzt[1][0]+iy*parm.minDmax_xyzt[1][1]<<" "
+							   <<result[iy][ix]
+							   <<std::endl;
+			}
+			
+		}
+		fout_waveheight.close();
+	}
 	// 服从均匀分布的随机数生成函数
 	double uniform(double a, double b)
 	{

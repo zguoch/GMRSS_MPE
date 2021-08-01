@@ -70,6 +70,14 @@ namespace OCEANWAVE
         }
     };
     
+    // save data
+    void SaveResult(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    // -- x,y,data格式
+    void SaveResult_txt(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    // -- rectlinear vtk grid
+    void SaveResult_VTK(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    // -- Surfer Grid
+    void SaveResult_grd(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
     // 计算t0时刻的波高
     double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h);
     // 服从均匀分布的随机数生成函数

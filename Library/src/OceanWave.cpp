@@ -14,21 +14,21 @@ namespace OCEANWAVE
 		// 参数
 		double gravity=parm.gravity;
 		// X方向空间范围和采样间隔(m)
-		double x1=parm.xmin;
-		double x2=parm.xmax;
-		double d_x=parm.dx;
+		double x1=parm.minDmax_xyzt[0][0];
+		double x2=parm.minDmax_xyzt[0][2];
+		double d_x=parm.minDmax_xyzt[0][1];
 		// Y方向空间范围和采样间隔(m)
-		double y1=parm.ymin;
-		double y2=parm.ymax;
-		double d_y=parm.dy;
+		double y1=parm.minDmax_xyzt[1][0];
+		double y2=parm.minDmax_xyzt[1][2];
+		double d_y=parm.minDmax_xyzt[1][1];
 		// Z方向空间范围和采样间隔(m)
-		double z1=parm.zmin;
-		double z2=parm.zmax;
-		double d_z=parm.dz;
+		double z1=parm.minDmax_xyzt[2][0];
+		double z2=parm.minDmax_xyzt[2][2];
+		double d_z=parm.minDmax_xyzt[2][1];
 		// 时间方向范围和采样间隔(s)
-		double t1=parm.tmin;
-		double t2=parm.tmax;
-		double d_t=parm.dt;
+		double t1=parm.minDmax_xyzt[3][0];
+		double t2=parm.minDmax_xyzt[3][2];
+		double d_t=parm.minDmax_xyzt[3][1];
 		long Nt=(long)((t2-t1)/d_t+1.0);
 		// 主浪方向(度)
 		double alfa=parm.alpha*PI/180.0;

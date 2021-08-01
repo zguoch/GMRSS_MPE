@@ -72,9 +72,9 @@ namespace GMRSS_MPEbash
     class cGMRSS_MPEarg
     {
     private:
-        bool m_havet, m_haveO, m_haveR, m_haveA, m_haveM, m_haveT, m_haveg, m_haveU;
+        bool m_havet, m_haveO, m_haveR, m_haveA, m_haveM, m_haveT, m_haveg, m_haveU, m_havef;
         int m_ModuleIndex, m_threadNumOMP;
-        std::string m_valueO, m_ModuleName;
+        std::string m_valueO, m_ModuleName, m_valuef;
         std::vector<std::string> m_ModuleNames, m_valueR_str, m_valueM_str;
         double m_valueA, m_valueU, m_valueg, m_valueT;
     public:

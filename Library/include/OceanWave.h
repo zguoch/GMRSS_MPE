@@ -32,16 +32,15 @@ namespace OCEANWAVE
     // 所需参数的结构体
     struct Par_OceanWave
     {
-        double xmin,dx,xmax,ymin,dy,ymax,zmin,dz,zmax; //X,Y,Z方向空间范围和采样间隔(m)
-        double tmin, dt, tmax; //时间方向范围和采样间隔(s)
         double minDmax_xyzt[4][3]; //xyzt四维方向的最小-增量-最大值
-        double gravity;
+        double gravity = 9.8;
         double alpha; //主浪方向(度)
         double omega2; //最大角频率(rad/s)
         double dOmega; //角频率采样间隔(rad/s)
         double dTheta; //方位采样间隔(度)
         double U10; //海面以上10米高度风速(m/s)
         std::string fname_WaveHeight, fname_SeawaterVelocity; //数据输出的文件名
+        std::string fmt_outputFile="txt"; //输出文件格式
         int nThreads = 1;
         bool showProgress = true;
         void print()
@@ -63,6 +62,10 @@ namespace OCEANWAVE
             std::cout<<"方位采样间隔: "<<dTheta<<"度\n";
             std::cout<<"海面以上10m的风速: "<<U10<<" m/s\n";
             std::cout<<"重力加速度: "<<gravity<<" m/s2\n";
+            std::cout<<"波浪文件: "<<fname_WaveHeight+"."+fmt_outputFile<<"\n";
+            std::cout<<"速度文件: "<<fname_SeawaterVelocity+"."+fmt_outputFile<<"\n";
+            std::cout<<"使用CPU个数: "<<nThreads<<"\n";
+            std::cout<<"是否显示进度条: "<<(showProgress==true ? "是":"否")<<"\n";
             std::cout<<"===========================================\n";
         }
     };

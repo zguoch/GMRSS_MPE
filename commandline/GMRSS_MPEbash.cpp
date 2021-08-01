@@ -37,7 +37,6 @@ namespace GMRSS_MPEbash
     cGMRSS_MPEarg arg;
     if(!arg.Parse(argc, argv)) return false;
     if(!arg.Validate()) return false;
-    // arg.runOceanWave();
     return true;
   }
 
@@ -75,7 +74,7 @@ namespace GMRSS_MPEbash
       argv[1] = const_cast<char*>(have_module);//place holder, nothing to be used
     }
     int opt; 
-    const char *optstring = "U:g:T:A:M:R:O:t:vhm"; // set argument templete
+    const char *optstring = "f:U:g:T:A:M:R:O:t:vhm"; // set argument templete
     int option_index = 0;
     int valid_args=0;
     double doubleOptValue;
@@ -137,6 +136,10 @@ namespace GMRSS_MPEbash
         if(!GetOptionValue(opt, optarg, doubleOptValue))return false;
         m_valueU=doubleOptValue;
         break;
+      case 'f': //file format
+        m_havef=true;
+        m_valuef=optarg;
+        break;
       default:
         break;
       }
@@ -156,6 +159,7 @@ namespace GMRSS_MPEbash
   }
   bool cGMRSS_MPEarg::Validate_OceanWave()
   {
+    if(m_havef)m_para_OceanWave.fmt_outputFile = m_valuef;
     if (!m_haveO)
     {
       cout<<WARN_COUT<<"没有指定输出文件名，使用默认文件名(OceanWave_U和OceanWave_h)且保存在当前程序的运行路径"<<endl;
@@ -202,8 +206,8 @@ namespace GMRSS_MPEbash
       return false;
     }else
     {
-      m_para_OceanWave.dOmega=atof(m_valueR_str[0].c_str());
-      m_para_OceanWave.omega2=atof(m_valueR_str[1].c_str());
+      m_para_OceanWave.dOmega=atof(m_valueM_str[0].c_str());
+      m_para_OceanWave.omega2=atof(m_valueM_str[1].c_str());
     }
     // 检查U10
     if(!m_haveU)
@@ -214,6 +218,18 @@ namespace GMRSS_MPEbash
     {
       m_para_OceanWave.U10 = m_valueU;
     }
+    //检查方位采样间隔
+    if(!m_haveT)
+    {
+      cout<<ERROR_COUT<<"请通过-T给定方位采样间隔, e.g. -T 1"<<endl;
+      return false;
+    }else
+    {
+      m_para_OceanWave.dTheta = m_valueT;
+    }
+    //重力加速度
+    if (m_haveg)m_para_OceanWave.gravity = m_valueg;
+    if(m_havet)m_para_OceanWave.nThreads = m_threadNumOMP;
     //检查主浪方向
     if(!m_haveA)
     {
@@ -224,6 +240,10 @@ namespace GMRSS_MPEbash
       m_para_OceanWave.alpha = m_valueA;
     }
     m_para_OceanWave.print();
+    // 参数没问题那就运行吧
+    std::vector<std::vector<std::vector<double> > > tmp_h;
+    WaveHeight(m_para_OceanWave, tmp_h); 
+    // runOceanWave();
     return true;
   }
   bool cGMRSS_MPEarg::Validate_Tail()
@@ -285,23 +305,23 @@ namespace GMRSS_MPEbash
     m_para_OceanWave.nThreads = omp_get_max_threads();
     m_para_OceanWave.gravity=9.81;
     // X方向空间范围和采样间隔(m)
-    m_para_OceanWave.xmin=-50.0;
-    m_para_OceanWave.xmax=+50.0;
-    m_para_OceanWave.dx=1.0;
+    m_para_OceanWave.minDmax_xyzt[0][0]=-50.0;
+    m_para_OceanWave.minDmax_xyzt[0][2]=+50.0;
+    m_para_OceanWave.minDmax_xyzt[0][1]=1.0;
     // Y方向空间范围和采样间隔(m)
-    m_para_OceanWave.ymin=-50.0;
-    m_para_OceanWave.ymax=+50.0;
-    m_para_OceanWave.dy=1.0;
+    m_para_OceanWave.minDmax_xyzt[1][0]=-50.0;
+    m_para_OceanWave.minDmax_xyzt[1][2]=+50.0;
+    m_para_OceanWave.minDmax_xyzt[1][1]=1.0;
 
     // Z方向空间范围和采样间隔(m)
-    m_para_OceanWave.zmin=0.0;
-    m_para_OceanWave.zmax=+10.0;
-    m_para_OceanWave.dz=1.0;
+    m_para_OceanWave.minDmax_xyzt[2][0]=0.0;
+    m_para_OceanWave.minDmax_xyzt[2][2]=+10.0;
+    m_para_OceanWave.minDmax_xyzt[2][1]=1.0;
 
     // 时间方向范围和采样间隔(s)
-    m_para_OceanWave.tmin=0.0;
-    m_para_OceanWave.tmax=+1000.0;
-    m_para_OceanWave.dt=500.0;
+    m_para_OceanWave.minDmax_xyzt[3][0]=0.0;
+    m_para_OceanWave.minDmax_xyzt[3][2]=+1000.0;
+    m_para_OceanWave.minDmax_xyzt[3][1]=500.0;
 
     // 主浪方向(度)
     m_para_OceanWave.alpha=45.0;

@@ -157,6 +157,7 @@ void MainWindow::busy_job_finished()
 
     // }
     ui->roundProgressBar->setVisible(false); //calculation finished, hide progressbar
+    ui->roundProgressBar->setValue(0);
     ui->pushButton->setVisible(true);
 }
 
@@ -252,6 +253,7 @@ int MainWindow::doOceanWave()
     {
         num[i]=num[i-1]+N;		
     }
+    srand(time(NULL));
     for(i=0;i<M;i++)
     {
         for(j=0;j<N;j++)
@@ -285,7 +287,7 @@ int MainWindow::doOceanWave()
     omp_set_num_threads(parm.nThreads);
     ui->roundProgressBar->setRange(0, Ny*Nt);
     int ind=0;
-    for(size_t it=0;it<Nt;it++)
+    for(it=0;it<Nt;it++)
     {
         double t=t1+it*d_t;
         #pragma omp parallel for private(iy, ix, m,n, omega, k, theta, y, x, sum)
@@ -315,7 +317,7 @@ int MainWindow::doOceanWave()
                 // {
                 //     h[it][iy][ix]=sum;
                 // }
-                wave_h[ix][iy] = sum;
+                wave_h[iy][ix] = sum;
             }
             if(parm.showProgress){
                 #pragma omp critical

@@ -125,7 +125,7 @@ namespace OCEANWAVE
 					// {
 					// 	h[it][iy][ix]=sum;
 					// }
-					wave_h[ix][iy] = sum;
+					wave_h[iy][ix] = sum;
 				}
 				if(parm.showProgress){
 					#pragma omp critical

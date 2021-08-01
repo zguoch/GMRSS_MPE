@@ -105,9 +105,14 @@ void MainWindow::busy_job()
             {
             case INDEX_OCEANWAVE_WAVE:
                 {
-                    getPar_OceanWave(m_par_OceanWave);
-                    auto future = QtConcurrent::run(this, &MainWindow::doOceanWave);
-                    watcher_->setFuture(future);
+                    if(getPar_OceanWave(m_par_OceanWave))
+                    {
+                        auto future = QtConcurrent::run(this, &MainWindow::doOceanWave);
+                        watcher_->setFuture(future);
+                    }else
+                    {
+                        busy_job_finished();
+                    }
                 }
                 break;
             default:
@@ -125,7 +130,6 @@ void MainWindow::busy_job()
         //ui->textEdit->append("3D is comming soon");
         break;
     }
-    
 }
 void MainWindow::Info(std::string infoText)
 {
@@ -172,7 +176,7 @@ int MainWindow::getIndex_OceanWave_Grav_Mag()
 
     return -1;
 }
-void MainWindow::getPar_OceanWave(OCEANWAVE::Par_OceanWave& par)
+bool MainWindow::getPar_OceanWave(OCEANWAVE::Par_OceanWave& par)
 {
     par.minDmax_xyzt[0][0]=ui->doubleSpinBox_xmin->value();
     par.minDmax_xyzt[0][1]=ui->doubleSpinBox_dx->value();
@@ -197,8 +201,21 @@ void MainWindow::getPar_OceanWave(OCEANWAVE::Par_OceanWave& par)
     par.fname_WaveHeight=outputPath + +"/" + ui->lineEdit_2->text().toStdString() + "_h";
     par.fname_SeawaterVelocity=outputPath + +"/" + ui->lineEdit_2->text().toStdString() + "_U";
     par.fmt_outputFile = ui->comboBox_fileFormat->currentText().toStdString();
-    
+    // 测试文件路径是否正常
+    std::string fname_test = outputPath+"/tmp.test";
+    std::ofstream fout_test(fname_test);
+    if(!fout_test)
+    {
+        Info("输出文件路径不正确，无法在此路径下写入文件："+outputPath);
+        return false;
+    }else
+    {
+        fout_test.close();
+        std::remove(fname_test.c_str());
+    }
+    // -------------
     par.nThreads = m_threadNumOMP;
+    return true;
 }
 int MainWindow::doOceanWave()
 {
@@ -339,9 +356,9 @@ int MainWindow::doOceanWave()
         OCEANWAVE::SaveResult(parm,wave_h, wave_U, t, SAVE_RESULT_h);
     }
     // 开始计算模拟海水速度数据
-    ui->roundProgressBar->setValue(0);
     ind = 0;
     ui->roundProgressBar->setRange(0, Nz*Nt);
+    ui->roundProgressBar->setValue(1);
     for(it=0;it<Nt;it++)
     {
         t=t1+it*d_t;
@@ -407,7 +424,7 @@ void MainWindow::initParameters()
 {
     // 文件路径
      ui->lineEdit->setText(QDir::currentPath());
-     ui->lineEdit_2->setText("海浪重磁响应");
+     ui->lineEdit_2->setText("test");
 }
 
 void MainWindow::on_pushButton_2_clicked()

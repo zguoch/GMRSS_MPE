@@ -81,7 +81,7 @@ private slots:
     void on_pushButton_clicked();
     // 1.0 海浪模拟
     int getIndex_OceanWave_Grav_Mag();
-    void getPar_OceanWave(OCEANWAVE::Par_OceanWave& par);
+    bool getPar_OceanWave(OCEANWAVE::Par_OceanWave& par);
     int doOceanWave();
 
     // 1.1 海浪的重力响应

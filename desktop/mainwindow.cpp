@@ -171,225 +171,165 @@ int MainWindow::getIndex_OceanWave_Grav_Mag()
 
     return -1;
 }
-void MainWindow::getPar_OceanWave(Par_OceanWave& par)
+void MainWindow::getPar_OceanWave(OCEANWAVE::Par_OceanWave& par)
 {
-    par.xmin=ui->doubleSpinBox_xmin->value();
-    par.dx=ui->doubleSpinBox_dx->value();
-    par.xmax=ui->doubleSpinBox_xmax->value();
-    par.ymin=ui->doubleSpinBox_ymin->value();
-    par.dy=ui->doubleSpinBox_dy->value();
-    par.ymax=ui->doubleSpinBox_ymax->value();
-    par.zmin=ui->doubleSpinBox_zmin->value();
-    par.dz=ui->doubleSpinBox_dz->value();
-    par.zmax=ui->doubleSpinBox_zmax->value();
-    
+    par.minDmax_xyzt[0][0]=ui->doubleSpinBox_xmin->value();
+    par.minDmax_xyzt[0][1]=ui->doubleSpinBox_dx->value();
+    par.minDmax_xyzt[0][2]=ui->doubleSpinBox_xmax->value();
+    par.minDmax_xyzt[1][0]=ui->doubleSpinBox_ymin->value();
+    par.minDmax_xyzt[1][1]=ui->doubleSpinBox_dy->value();
+    par.minDmax_xyzt[1][2]=ui->doubleSpinBox_ymax->value();
+    par.minDmax_xyzt[2][0]=ui->doubleSpinBox_zmin->value();
+    par.minDmax_xyzt[2][1]=ui->doubleSpinBox_dz->value();
+    par.minDmax_xyzt[2][2]=ui->doubleSpinBox_zmax->value();
+    par.minDmax_xyzt[3][0]=ui->doubleSpinBox_tmin->value();
+    par.minDmax_xyzt[3][1]=ui->doubleSpinBox_dt->value();
+    par.minDmax_xyzt[3][2]=ui->doubleSpinBox_tmax->value();
     par.alpha=ui->doubleSpinBox_alpha->value();
     par.dTheta=ui->doubleSpinBox_dTheta->value();
     par.U10=ui->doubleSpinBox_U10->value();
     par.omega2=ui->doubleSpinBox_omega2->value();
     par.dOmega=ui->doubleSpinBox_dOmega->value();
-    par.tmin=ui->doubleSpinBox_tmin->value();
-    par.dt=ui->doubleSpinBox_dt->value();
-    par.tmax=ui->doubleSpinBox_tmax->value();
     par.gravity=ui->doubleSpinBox_gravity->value();
 
-    par.fname_WaveHeight=ui->lineEdit->text().toStdString();
-    par.fname_SeawaterVelocity=ui->lineEdit_2->text().toStdString();
+    std::string outputPath = ui->lineEdit->text().toStdString();
+    par.fname_WaveHeight=outputPath + +"/" + ui->lineEdit_2->text().toStdString() + "_h";
+    par.fname_SeawaterVelocity=outputPath + +"/" + ui->lineEdit_2->text().toStdString() + "_U";
+    par.fmt_outputFile = ui->comboBox_fileFormat->currentText().toStdString();
+    
+    par.nThreads = m_threadNumOMP;
 }
 int MainWindow::doOceanWave()
 {
-    time_t start,end;
-    // 输入参数
-	// 重力加速度(m/s^2)
-	double gravity=m_par_OceanWave.gravity;
-	// X方向空间范围和采样间隔(m)
-	double x1=m_par_OceanWave.xmin;
-	double x2=m_par_OceanWave.xmax;
-	double d_x=m_par_OceanWave.dx;
-	// Y方向空间范围和采样间隔(m)
-	double y1=m_par_OceanWave.ymin;
-	double y2=m_par_OceanWave.ymax;
-	double d_y=m_par_OceanWave.dy;
-	// Z方向空间范围和采样间隔(m)
-	double z1=m_par_OceanWave.zmin;
-	double z2=m_par_OceanWave.zmax;
-	double d_z=m_par_OceanWave.dz;
-	// 时间方向范围和采样间隔(s)
-	double t1=m_par_OceanWave.tmin;
-	double t2=m_par_OceanWave.tmax;
-	double d_t=m_par_OceanWave.dt;
-	// 主浪方向(度)
-	double alfa=m_par_OceanWave.alpha*PI/180.0;
-	// 海面以上10米高度风速(m/s)
-	double U10=m_par_OceanWave.U10;
-	// 最大角频率(rad/s)
-	double omega2=m_par_OceanWave.omega2;
-	// 角频率采样间隔(rad/s)
-	double d_omega=m_par_OceanWave.dOmega;
-	// 方位采样间隔(度)
-	double d_theta=m_par_OceanWave.dTheta*PI/180.0;
-	// // 输入保存波高数据的文件名
-	// char DataOut1[256]=m_par_OceanWave.fname_WaveHeight.c_str();
-	// // 输入保存海水速度数据的文件名
-	// char DataOut2[256]=m_par_OceanWave.fname_SeawaterVelocity.c_str();
+    OCEANWAVE::Par_OceanWave parm = m_par_OceanWave;
+    // 参数
+    double gravity=parm.gravity;
+    // X方向空间范围和采样间隔(m)
+    double x1=parm.minDmax_xyzt[0][0];
+    double x2=parm.minDmax_xyzt[0][2];
+    double d_x=parm.minDmax_xyzt[0][1];
+    // Y方向空间范围和采样间隔(m)
+    double y1=parm.minDmax_xyzt[1][0];
+    double y2=parm.minDmax_xyzt[1][2];
+    double d_y=parm.minDmax_xyzt[1][1];
+    // Z方向空间范围和采样间隔(m)
+    double z1=parm.minDmax_xyzt[2][0];
+    double z2=parm.minDmax_xyzt[2][2];
+    double d_z=parm.minDmax_xyzt[2][1];
+    // 时间方向范围和采样间隔(s)
+    double t1=parm.minDmax_xyzt[3][0];
+    double t2=parm.minDmax_xyzt[3][2];
+    double d_t=parm.minDmax_xyzt[3][1];
+    long Nt=(long)((t2-t1)/d_t+1.0);
+    // 主浪方向(度)
+    double alfa=parm.alpha*PI/180.0;
+    // 海面以上10米高度风速(m/s)
+    double U10=parm.U10;
+    // 最大角频率(rad/s)
+    double omega2=parm.omega2;
+    // 角频率采样间隔(rad/s)
+    double d_omega=parm.dOmega;
+    // 方位采样间隔(度)
+    double d_theta=parm.dTheta*PI/180.0;
 
     /////////////////////////////////////////////////////////////////////
-	long Nx=(long)((x2-x1)/d_x+1.0);
-	long Ny=(long)((y2-y1)/d_y+1.0);
-	long Nz=(long)((z2-z1)/d_z+1.0);
-	long Nt=(long)((t2-t1)/d_t+1.0);
-
-	double omega1=d_omega;
-	long M=(long)((omega2-omega1)/d_omega+1.0);
-
-	double theta1=-90*PI/180.0;
-	double theta2=+90.0*PI/180.0;
-	long N=(long)((theta2-theta1)/d_theta+1.0);
-
-	// 转换计算海面以上19.5米处的风速
-	double U19p5=Wind(19.5,U10);
-
-	// 生成0-2PI之间的随机数
-	long i,j;
-	double** num = new double*[M];
-	num[0] = new double[M*N];
-	for(i=1;i<M;++i)
+    long Nx=(long)((x2-x1)/d_x+1.0);
+    long Ny=(long)((y2-y1)/d_y+1.0);
+    long Nz=(long)((z2-z1)/d_z+1.0);
+    
+    double omega1=d_omega;
+    long M=(long)((omega2-omega1)/d_omega+1.0);
+    double theta1=-90*PI/180.0;
+    double theta2=+90.0*PI/180.0;
+    long N=(long)((theta2-theta1)/d_theta+1.0);
+    // 转换计算海面以上19.5米处的风速
+    double U19p5=OCEANWAVE::Wind(19.5,U10);
+    // 生成0-2PI之间的随机数
+    long i,j;
+    double** num = new double*[M];
+    num[0] = new double[M*N];
+    for(i=1;i<M;++i)
     {
         num[i]=num[i-1]+N;		
     }
-	srand(time(NULL));
-	for(i=0;i<M;i++)
-	{
-		for(j=0;j<N;j++)
-		{
-			num[i][j]=uniform(0.0,2.0*PI);
-		}
-	}
-	
-	long ix,iy,iz,it,m,n;
-	long nProcess=0;
-	double x,y,z,t,k,omega,sum,sumx,sumy,sumz,h,Vx,Vy,Vz,theta;
-	// 打开保存波高数据的文件
-    std::ofstream fout1(m_par_OceanWave.fname_WaveHeight);
-    if(!fout1)
+    for(i=0;i<M;i++)
     {
-        std::cout<<"打开文件失败: "<<m_par_OceanWave.fname_WaveHeight<<std::endl;
-        return 0;
+        for(j=0;j<N;j++)
+        {
+            num[i][j]=OCEANWAVE::uniform(0.0,2.0*PI);
+        }
     }
-	// FILE *fpOut1=fopen(m_par_OceanWave.fname_WaveHeight.c_str(), "w+");
-    // if(fpOut1==NULL)
-    // {
-    //     Info("打开文件失败: "+m_par_OceanWave.fname_WaveHeight);
-    //     return 0;
-    // }
-	// // 向波高数据文件输入文件头
-	// fprintf(fpOut1,"x[m]\ty[m]\tt[s]\th[m]\n");
-    fout1<<"x[m]\ty[m]\tt[s]\th[m]\n";
-	// 开始计算模拟波高数据
-    printf("\nCalculating process : 1234");
-	time(&start);
+		
+    long ix,iy,iz,it,m,n;
+    // long nProcess=0;
+    double x,y,z,t,k,omega,sum,sumx,sumy,sumz,Vx,Vy,Vz,theta;
 
-    omp_set_num_threads(m_threadNumOMP);
-	for(it=0;it<Nt;it++)
+		// // 根据传入的vector引用的大小判断是否返回数据，为什么要这么做？答：有时候如果用户给定的模拟数据量太大，就不用返回所有数据了，只写入文件就行
+		// // 有这三种情况：（1）返回所有数据，也就是这个h是一个NtxNyxNx的矩阵；（2）只返回最后时刻的计算结果，h是一个1xNyxNx;(3)不返还任何数据，h的大小为0
+		// int returnResults = RETURN_RESULTS_NO;
+		// if(h.size()==0){
+		// 	returnResults = RETURN_RESULTS_NO;
+		// }else{
+		// 	if(h.size()==1 && h[0].size()==Ny && h[0][0].size()==Nx){
+		// 		returnResults = RETURN_RESULTS_LATEST;
+		// 	}else if(h.size()==Nt && h[0].size()==Ny && h[0][0].size()==Nx){
+		// 		returnResults = RETURN_RESULTS_ALL;
+		// 	}else{
+		// 		returnResults = RETURN_RESULTS_NO;
+		// 	}
+		// }
+    // 对每一个时刻的结果进行保存
+    std::vector<std::vector<double> > wave_h(Ny);
+    for (size_t i = 0; i < Ny; i++)wave_h[i].resize(Nx);
+    // 开始计算模拟波高数据
+    omp_set_num_threads(parm.nThreads);
+    ui->roundProgressBar->setRange(0, Ny*Nt);
+    int ind=0;
+    for(size_t it=0;it<Nt;it++)
     {
-		nProcess=(long)((it+1)*100/Nt);
-		printf("\b\b\b\b%2ld%% ",nProcess);
+        double t=t1+it*d_t;
+        #pragma omp parallel for private(iy, ix, m,n, omega, k, theta, y, x, sum)
+        for(iy=0;iy<Ny;iy++)
+        {
+            y=y1+iy*d_y;
+            for(ix=0;ix<Nx;ix++)
+            {
+                x=x1+ix*d_x;
+                sum=0.0;
+                
+                for(m=0;m<M;m++)
+                {
+                    omega=omega1+m*d_omega;
+                    k=omega*omega/gravity;
+                    for(n=0;n<N;n++)
+                    {
+                        theta=theta1+n*d_theta;	
+                        sum+=sqrt(2.0*OCEANWAVE::PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
+                    }	
+                }
+                // // 根据情况判断是否需要把数据返回
+                // if(returnResults == RETURN_RESULTS_LATEST && it==(Nt-1))
+                // {
+                //     h[0][iy][ix]=sum;
+                // }else if(returnResults == RETURN_RESULTS_ALL)
+                // {
+                //     h[it][iy][ix]=sum;
+                // }
+                wave_h[ix][iy] = sum;
+            }
+            if(parm.showProgress){
+                #pragma omp critical
+                ind++;
+                ui->roundProgressBar->setValue(ind);
+            }
+        }
+        // save result at t
+        OCEANWAVE::SaveResult(parm,wave_h,t);
+    }
+    //release pointer
+    delete[] num[0]; 
+    delete[] num;
 
-		t=t1+it*d_t;
-        ui->roundProgressBar->setRange(0,Ny);
-        int ind=0;
-        #pragma omp parallel for private(iy, ix, m, n, x, y, sum, omega, k, theta)
-		for(iy=0;iy<Ny;iy++)
-		{
-			y=y1+iy*d_y;
-			for(ix=0;ix<Nx;ix++)
-			{
-				x=x1+ix*d_x;
-				sum=0.0;
-				for(m=0;m<M;m++)
-				{
-					omega=omega1+m*d_omega;
-					k=omega*omega/gravity;
-					for(n=0;n<N;n++)
-					{
-						theta=theta1+n*d_theta;	
-						sum+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
-					}	
-				}
-				h=sum;
-			// 	// 输出计算结果
-			// 	// fprintf(fpOut1,"%.3lf\t%.3lf\t%.3lf\t%.3lf\n",x,y,t,h);
-            //     // fout1<<x<<" "<<y<<" "<<t<<" "<<h<<std::endl;
-			}
-            #pragma omp critical
-            ind++;
-            ui->roundProgressBar->setValue((int)ind);
-		}
-        
-	}
-	// fclose(fpOut1);
-    fout1.close();
-	printf("\n\nThe wave height data has been simulated!\n\n");
-
-	// // 打开保存海水速度数据的文件
-	// FILE *fpOut2=fopen(DataOut2, "w+");
-	// // 向海水速度数据文件输入文件头
-	// fprintf(fpOut2,"x[m]\ty[m]\tz[m]\tt[s]\tVx[m/s]\tVy[m/s]\tVz[m/s]\n");
-
-	// // 开始计算模拟海水速度数据
-	// for(it=0;it<Nt;it++)
-    // {
-	// 	nProcess=(long)((it+1)*100/Nt);
-	// 	printf("\b\b\b\b%2ld%% ",nProcess);
-
-	// 	t=t1+it*d_t;
-	// 	for(iz=0;iz<Nz;iz++)
-	// 	{
-	// 		z=z1+iz*d_z;
-	// 		for(iy=0;iy<Ny;iy++)
-	// 		{
-	// 			y=y1+iy*d_y;
-	// 			for(ix=0;ix<Nx;ix++)
-	// 			{
-	// 				x=x1+ix*d_x;
-	// 				sumx=0.0;
-	// 				sumy=0.0;
-	// 				sumz=0.0;
-	// 				for(m=0;m<M;m++)
-	// 				{
-	// 					omega=omega1+m*d_omega;
-	// 					k=omega*omega/gravity;
-	// 					for(n=0;n<N;n++)
-	// 					{
-	// 						theta=theta1+n*d_theta;	
-	// 						sumx+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*exp(-k*z)*omega*cos(theta)*sin(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
-	// 						sumy+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*exp(-k*z)*omega*sin(theta)*sin(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
-	// 						sumz+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*exp(-k*z)*omega*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
-	// 					}	
-	// 				}
-	// 				Vx=sumx;
-	// 				Vy=sumy;
-	// 				Vz=sumz;
-	// 				// 输出计算结果
-	// 				fprintf(fpOut2,"%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n",x,y,z,t,Vx,Vy,Vz);
-	// 			}
-	// 		}
-	// 	}
-	// }
-	// fclose(fpOut2);
-	// printf("\n\nThe velocity data has been simulated!\n\n");
-
-	// delete[] num[0]; 
-	// delete[] num;
-	
-	// time(&end);
-	// printf("\n\nCalculation is finished !");
-	// printf("\n\nComputing time: %.5lf seconds",difftime(end,start));
-   
-	// // 计算结束
-    // printf("\n\nCalculating completed!\t\t\n\nPlease press any key to exit ...\n\n");
-    // // getch();
-    
     return 0;
 }
 
@@ -403,6 +343,24 @@ void MainWindow::updateUILayout()
 void MainWindow::initParameters()
 {
     // 文件路径
-     ui->lineEdit->setText(QDir::currentPath()+"/波高模拟数据.txt");
-     ui->lineEdit_2->setText(QDir::currentPath()+"/海水速度模拟数据.txt");
+     ui->lineEdit->setText(QDir::currentPath());
+     ui->lineEdit_2->setText("海浪重磁响应");
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    std::string filter_ext, title_dlg;
+    QString dir_output;
+    title_dlg=tr("选择保存数据的路径").toStdString().c_str();
+    dir_output = QFileDialog::getExistingDirectory(this, tr(title_dlg.c_str()), ui->lineEdit->text());
+    // QFileDialog::getExistingDirectory();
+    // QFileDialog dialog;
+    // dialog.setFileMode(QFileDialog::DirectoryOnly);
+    // dialog.setOption(QFileDialog::DontUseNativeDialog, true);
+    // dialog.setOption(QFileDialog::ShowDirsOnly, false);
+    // dialog.exec();
+    if (!dir_output.isNull())
+    {
+        ui->lineEdit->setText(dir_output);
+    }
 }

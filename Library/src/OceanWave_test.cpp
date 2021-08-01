@@ -115,6 +115,7 @@ int main()
 		for(iy=0;iy<Ny;iy++)
 		{
 			y=y1+iy*d_y;
+			printf("t=%f, y=%f\n", t, y);
 			for(ix=0;ix<Nx;ix++)
 			{
 				x=x1+ix*d_x;
@@ -137,7 +138,7 @@ int main()
 	}
 	fclose(fpOut1);
 	printf("\n\nThe wave height data has been simulated!\n\n");
-
+	return 0;
 	// 打开保存海水速度数据的文件
 	FILE *fpOut2=fopen(DataOut2, "w+");
 	// 向海水速度数据文件输入文件头

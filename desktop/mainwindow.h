@@ -30,6 +30,7 @@
 #include <QFutureWatcher>
 #include <QElapsedTimer>
 #include <QTranslator>
+#include <QFileDialog>
 
 #include <thread>
 #include <omp.h>
@@ -63,7 +64,7 @@ protected:
     int testjob();
     int do_busy_job();
     int m_threadNumOMP;
-    Par_OceanWave m_par_OceanWave;
+    OCEANWAVE::Par_OceanWave m_par_OceanWave;
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -80,7 +81,7 @@ private slots:
     void on_pushButton_clicked();
     // 1.0 海浪模拟
     int getIndex_OceanWave_Grav_Mag();
-    void getPar_OceanWave(Par_OceanWave& par);
+    void getPar_OceanWave(OCEANWAVE::Par_OceanWave& par);
     int doOceanWave();
 
     // 1.1 海浪的重力响应
@@ -88,6 +89,8 @@ private slots:
     // ...
     void updateUILayout();
     void initParameters();
+    void on_pushButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

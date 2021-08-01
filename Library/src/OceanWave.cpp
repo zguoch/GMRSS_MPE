@@ -30,7 +30,6 @@ namespace OCEANWAVE
 		double t1=parm.minDmax_xyzt[3][0];
 		double t2=parm.minDmax_xyzt[3][2];
 		double d_t=parm.minDmax_xyzt[3][1];
-		long Nt=(long)((t2-t1)/d_t+1.0);
 		// 主浪方向(度)
 		double alfa=parm.alpha*PI/180.0;
 		// 海面以上10米高度风速(m/s)
@@ -46,6 +45,7 @@ namespace OCEANWAVE
 		long Nx=(long)((x2-x1)/d_x+1.0);
 		long Ny=(long)((y2-y1)/d_y+1.0);
 		long Nz=(long)((z2-z1)/d_z+1.0);
+		long Nt=(long)((t2-t1)/d_t+1.0);
 		
 		double omega1=d_omega;
 		long M=(long)((omega2-omega1)/d_omega+1.0);
@@ -62,6 +62,7 @@ namespace OCEANWAVE
 		{
 			num[i]=num[i-1]+N;		
 		}
+		srand(time(NULL));
 		for(i=0;i<M;i++)
 		{
 			for(j=0;j<N;j++)
@@ -74,27 +75,27 @@ namespace OCEANWAVE
 		// long nProcess=0;
 		double x,y,z,t,k,omega,sum,sumx,sumy,sumz,Vx,Vy,Vz,theta;
 
-		// 根据传入的vector引用的大小判断是否返回数据，为什么要这么做？答：有时候如果用户给定的模拟数据量太大，就不用返回所有数据了，只写入文件就行
-		// 有这三种情况：（1）返回所有数据，也就是这个h是一个NtxNyxNx的矩阵；（2）只返回最后时刻的计算结果，h是一个1xNyxNx;(3)不返还任何数据，h的大小为0
-		int returnResults = RETURN_RESULTS_NO;
-		if(h.size()==0){
-			returnResults = RETURN_RESULTS_NO;
-		}else{
-			if(h.size()==1 && h[0].size()==Ny && h[0][0].size()==Nx){
-				returnResults = RETURN_RESULTS_LATEST;
-			}else if(h.size()==Nt && h[0].size()==Ny && h[0][0].size()==Nx){
-				returnResults = RETURN_RESULTS_ALL;
-			}else{
-				returnResults = RETURN_RESULTS_NO;
-			}
-		}
+		// // 根据传入的vector引用的大小判断是否返回数据，为什么要这么做？答：有时候如果用户给定的模拟数据量太大，就不用返回所有数据了，只写入文件就行
+		// // 有这三种情况：（1）返回所有数据，也就是这个h是一个NtxNyxNx的矩阵；（2）只返回最后时刻的计算结果，h是一个1xNyxNx;(3)不返还任何数据，h的大小为0
+		// int returnResults = RETURN_RESULTS_NO;
+		// if(h.size()==0){
+		// 	returnResults = RETURN_RESULTS_NO;
+		// }else{
+		// 	if(h.size()==1 && h[0].size()==Ny && h[0][0].size()==Nx){
+		// 		returnResults = RETURN_RESULTS_LATEST;
+		// 	}else if(h.size()==Nt && h[0].size()==Ny && h[0][0].size()==Nx){
+		// 		returnResults = RETURN_RESULTS_ALL;
+		// 	}else{
+		// 		returnResults = RETURN_RESULTS_NO;
+		// 	}
+		// }
 		// 对每一个时刻的结果进行保存
 		std::vector<std::vector<double> > wave_h(Ny);
 		for (size_t i = 0; i < Ny; i++)wave_h[i].resize(Nx);
 		// 开始计算模拟波高数据
 		omp_set_num_threads(parm.nThreads);
 		MultiProgressBar multibar(Ny*Nt,COLOR_BAR_BLUE);
-		for(size_t it=0;it<Nt;it++)
+		for(it=0;it<Nt;it++)
 		{
 			double t=t1+it*d_t;
 			#pragma omp parallel for private(iy, ix, m,n, omega, k, theta, y, x, sum)
@@ -116,14 +117,14 @@ namespace OCEANWAVE
 							sum+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
 						}	
 					}
-					// 根据情况判断是否需要把数据返回
-					if(returnResults == RETURN_RESULTS_LATEST && it==(Nt-1))
-					{
-						h[0][iy][ix]=sum;
-					}else if(returnResults == RETURN_RESULTS_ALL)
-					{
-						h[it][iy][ix]=sum;
-					}
+					// // 根据情况判断是否需要把数据返回
+					// if(returnResults == RETURN_RESULTS_LATEST && it==(Nt-1))
+					// {
+					// 	h[0][iy][ix]=sum;
+					// }else if(returnResults == RETURN_RESULTS_ALL)
+					// {
+					// 	h[it][iy][ix]=sum;
+					// }
 					wave_h[ix][iy] = sum;
 				}
 				if(parm.showProgress){
@@ -161,7 +162,9 @@ namespace OCEANWAVE
 	}
 	void SaveResult_VTK(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t)
 	{
-		std::string fname_waveheight = parm.fname_WaveHeight+"_"+std::to_string(t)+"."+parm.fmt_outputFile;
+		char str_t[256];
+		sprintf(str_t, "%.0f", t);
+		std::string fname_waveheight = parm.fname_WaveHeight+"_"+str_t+"."+parm.fmt_outputFile;
 		std::ofstream fout_waveheight(fname_waveheight);
 		if(!fout_waveheight)
 		{
@@ -221,19 +224,22 @@ namespace OCEANWAVE
 	}
 	void SaveResult_txt(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t)
 	{
-		std::string fname_waveheight = parm.fname_WaveHeight+"_"+std::to_string(t)+"."+parm.fmt_outputFile;
-		std::ofstream fout_waveheight(fname_waveheight);
+		// .txt的情况下下把所有时间的数据写到一个文件里面，方便对单点随时间变化或剖面输出
+		std::string fname_waveheight = parm.fname_WaveHeight+"."+parm.fmt_outputFile;
+		std::ofstream fout_waveheight(fname_waveheight, std::ofstream::app);
 		if(!fout_waveheight)
 		{
 			std::cout<<"Error: 打开文件失败, "<<fname_waveheight<<std::endl;
 			exit(0);
 		}
+		fout_waveheight<<"x[m] y[m] t[s] h[m]\n";
 		for (size_t iy = 0; iy < result.size(); iy++)
 		{
 			for (size_t ix = 0; ix < result[0].size(); ix++)
 			{
 				fout_waveheight<<parm.minDmax_xyzt[0][0]+ix*parm.minDmax_xyzt[0][1]<<" "
 							   <<parm.minDmax_xyzt[1][0]+iy*parm.minDmax_xyzt[1][1]<<" "
+							   <<t<<" "
 							   <<result[iy][ix]
 							   <<std::endl;
 			}

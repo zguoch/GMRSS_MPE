@@ -41,6 +41,7 @@ struct Par_OceanWave
     double dTheta; //方位采样间隔(度)
     double U10; //海面以上10米高度风速(m/s)
     std::string fname_WaveHeight, fname_SeawaterVelocity; //数据输出的文件名
+    int nThreads = 1;
 };
 // 计算t0时刻的波高
 double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h);

@@ -56,15 +56,16 @@ namespace GMRSS_MPEbash
   }
   void cGMRSS_MPEarg::runOceanWave()
   {
+    m_para_OceanWave.nThreads = omp_get_max_threads();
     m_para_OceanWave.gravity=9.81;
     // X方向空间范围和采样间隔(m)
     m_para_OceanWave.xmin=-50.0;
     m_para_OceanWave.xmax=+50.0;
-    m_para_OceanWave.dx=10.0;
+    m_para_OceanWave.dx=1.0;
     // Y方向空间范围和采样间隔(m)
     m_para_OceanWave.ymin=-50.0;
     m_para_OceanWave.ymax=+50.0;
-    m_para_OceanWave.dy=10.0;
+    m_para_OceanWave.dy=1.0;
 
     // Z方向空间范围和采样间隔(m)
     m_para_OceanWave.zmin=0.0;
@@ -74,7 +75,7 @@ namespace GMRSS_MPEbash
     // 时间方向范围和采样间隔(s)
     m_para_OceanWave.tmin=0.0;
     m_para_OceanWave.tmax=+1000.0;
-    m_para_OceanWave.dt=100.0;
+    m_para_OceanWave.dt=500.0;
 
     // 主浪方向(度)
     m_para_OceanWave.alpha=45.0;

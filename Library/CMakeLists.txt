@@ -1,45 +1,40 @@
 # 0. CMake Minimum version
-cmake_minimum_required (VERSION 2.12)
-if (POLICY CMP0086)
-  # cmake warns if loaded from a min-3.0-required parent dir, so silence the warning:
-  cmake_policy(SET CMP0086 NEW)
-endif()
-if (POLICY CMP0078)
-  cmake_policy(SET CMP0078 NEW)
-endif()
-if (POLICY CMP0042)
-  cmake_policy(SET CMP0042 NEW)
-endif()
+cmake_minimum_required(VERSION 3.3...3.12 FATAL_ERROR)
 
-project(GMRSS_MPE CXX C)
-# project(${PROJECT_NAME} LANGUAGES CXX)
-if(${CMAKE_VERSION} VERSION_LESS "3.3") 
-else()
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
+project(GMRSS_MPE LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(GMRSS_MPE_MAJOR_VERSION 1)
-set(GMRSS_MPE_MINOR_VERSION 7)
-set(GMRSS_MPE_PATCH_VERSION 0)
-set(GMRSS_MPE_EXTRA_VERSION "")
-set(GMRSS_MPE_EXTRA_VERSION_TEXI "${GMRSS_MPE_EXTRA_VERSION}")
-if(NOT GMRSS_MPE_RELEASE)
-  find_package(Git)
-  if(GIT_FOUND)
-    execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --format=%h
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} ERROR_QUIET
-                    OUTPUT_VARIABLE GIT_COMMIT_HASH
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  endif()
-  if(GIT_COMMIT_HASH)
-    set(GMRSS_MPE_EXTRA_VERSION "${GMRSS_MPE_EXTRA_VERSION}-git-${GIT_COMMIT_HASH}")
-  endif()
-  set(GMRSS_MPE_EXTRA_VERSION_TEXI "${GMRSS_MPE_EXTRA_VERSION_TEXI} (development version)")
+# Using OpenMP
+include_directories(/usr/local/Cellar/libomp/11.0.0/include /usr/local/Cellar/libomp/11.1.0/include /usr/local/Cellar/libomp/12.0.1/include)
+find_package(OpenMP REQUIRED)
+if(APPLE)
+    set(CMAKE_C_COMPILER clang)
+    set(CMAKE_CXX_COMPILER clang++)
+
+    if(CMAKE_C_COMPILER_ID MATCHES "Clang\$")
+        set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+        set(OpenMP_C_LIB_NAMES "omp")
+        set(OpenMP_omp_LIBRARY omp)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang\$")
+        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+        set(OpenMP_CXX_LIB_NAMES "omp")
+        set(OpenMP_omp_LIBRARY omp)
+    endif()
 endif()
-set(GMRSS_MPE_VERSION "${GMRSS_MPE_MAJOR_VERSION}.${GMRSS_MPE_MINOR_VERSION}")
-set(GMRSS_MPE_VERSION "${GMRSS_MPE_VERSION}.${GMRSS_MPE_PATCH_VERSION}${GMRSS_MPE_EXTRA_VERSION}")
-set(GMRSS_MPE_SHORT_LICENSE "GNU General Public License")
+if(OPENMP_FOUND)
+    message("OPENMP FOUND")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+# #windows vs2017 doesn't need opm library link 
+set(LIBomp "")
+if (APPLE)
+  set(LIBomp "omp")
+endif()
 
 #2. Source code dir
 aux_source_directory(. SRC_MAIN)
@@ -47,14 +42,14 @@ aux_source_directory(. SRC_MAIN)
 include_directories(src include)
 # source
 add_subdirectory(src)
-
+link_directories("/usr/local/lib")
 # include path 
 INCLUDE_DIRECTORIES( ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/../commandline )
 # 所有模块源文件
 FILE(GLOB SC_MODULES  "${PROJECT_SOURCE_DIR}/src/OceanWave.cpp" "${PROJECT_SOURCE_DIR}/../commandline/MultiProgressBar.cpp")
 # 将所有模块编译为一个动态库
 add_library (${PROJECT_NAME}  ${SC_MODULES} )
-target_link_libraries(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} ${LIBomp})
 # 安装动态库路径
 install (TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 

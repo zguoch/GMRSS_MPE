@@ -3,6 +3,7 @@
 #include "proj.h"
 #include "OceanWave.h"
 #include "MultiProgressBar.h"
+#include "omp.h"
 
 double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h)
 {
@@ -65,7 +66,7 @@ double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector
 	}
 	
 	long ix,iy,iz,it,m,n;
-	long nProcess=0;
+	// long nProcess=0;
 	double x,y,z,t,k,omega,sum,sumx,sumy,sumz,Vx,Vy,Vz,theta;
 
 	// 根据传入的vector引用的大小判断是否返回数据，为什么要这么做？答：有时候如果用户给定的模拟数据量太大，就不用返回所有数据了，只写入文件就行
@@ -83,17 +84,19 @@ double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector
 		}
 	}
 
-	// -- Multi-progressbar
-	vector<double>bar_left;bar_left.push_back(y1);bar_left.push_back(t1);
-    vector<double>bar_right;bar_right.push_back(y2);bar_right.push_back(t2);
-    vector<double>bar_pos; bar_pos.push_back(bar_left[0]);bar_pos.push_back(bar_left[1]);
-    vector<string>bar_title; bar_title.push_back("空间方向Y");bar_title.push_back("时间方向t");
-    MultiProgressBar multiBar(bar_left,bar_right,bar_title);
+	// // -- Multi-progressbar
+	// vector<double>bar_left;bar_left.push_back(y1);bar_left.push_back(t1);
+    // vector<double>bar_right;bar_right.push_back(y2);bar_right.push_back(t2);
+    // vector<double>bar_pos; bar_pos.push_back(bar_left[0]);bar_pos.push_back(bar_left[1]);
+    // vector<string>bar_title; bar_title.push_back("空间方向Y");bar_title.push_back("时间方向t");
+    // MultiProgressBar multiBar(bar_left,bar_right,bar_title);
 	// 开始计算模拟波高数据
-	for(it=0;it<Nt;it++)
+	omp_set_num_threads(parm.nThreads);
+	MultiProgressBar multibar(Ny*Nt,COLOR_BAR_BLUE);
+	for(size_t it=0;it<Nt;it++)
     {
-		// MultiProgressBar multibar(Ny,COLOR_BAR_BLUE);
-		t=t1+it*d_t;
+		double t=t1+it*d_t;
+		#pragma omp parallel for private(iy, ix, m,n, omega, k, theta, y, x, sum)
 		for(iy=0;iy<Ny;iy++)
 		{
 			y=y1+iy*d_y;
@@ -101,6 +104,7 @@ double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector
 			{
 				x=x1+ix*d_x;
 				sum=0.0;
+				
 				for(m=0;m<M;m++)
 				{
 					omega=omega1+m*d_omega;
@@ -120,12 +124,14 @@ double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector
 					h[it][iy][ix]=sum;
 				}
 			}
-		// multibar.Update();
-			bar_pos[0]=y;
-			multiBar.Update(bar_pos);
+			#pragma omp critical
+			multibar.Update();
+			
+			// bar_pos[0]=y;
+			// multiBar.Update(bar_pos);
 		}
-		bar_pos[1]=t;
-		multiBar.Update(bar_pos);
+		// bar_pos[1]=t;
+		// multiBar.Update(bar_pos);
 		// std::cout<<"t = "<<t<<" finished"<<std::endl;
 	}
 	//release pointer

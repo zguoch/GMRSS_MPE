@@ -23,7 +23,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMainWindow>
-
+#include <QMessageBox>
 #include <QThread>
 #include <QtConcurrent>
 #include <QFuture>
@@ -33,6 +33,18 @@
 
 #include <thread>
 #include <omp.h>
+
+// 模拟计算库的头文件
+#include "proj.h"
+#include "OceanWave.h"
+
+// INDEX define
+#define INDEX_GROUP_OCEANWAVE 0
+#define INDEX_GROUP_TRAIL 1
+
+#define INDEX_OCEANWAVE_WAVE 0
+#define INDEX_OCEANWAVE_GRAV 1
+#define INDEX_OCEANWAVE_MAG 2
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -51,6 +63,7 @@ protected:
     int testjob();
     int do_busy_job();
     int m_threadNumOMP;
+    Par_OceanWave m_par_OceanWave;
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -59,13 +72,22 @@ public:
 //   virtual void slotOpenFile();
 //   virtual void slotExit();
     void busy_job();
+    void Info(std::string infoText);
 public:
     void initRenderWindow();
 
 private slots:
     void on_pushButton_clicked();
+    // 1.0 海浪模拟
+    int getIndex_OceanWave_Grav_Mag();
+    void getPar_OceanWave(Par_OceanWave& par);
     int doOceanWave();
+
+    // 1.1 海浪的重力响应
+    // ...
+    // ...
     void updateUILayout();
+    void initParameters();
 private:
     Ui::MainWindow *ui;
 };

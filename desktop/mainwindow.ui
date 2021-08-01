@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1609</width>
+    <width>1780</width>
     <height>666</height>
    </rect>
   </property>
@@ -62,7 +62,7 @@
            </size>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="icon">
@@ -537,7 +537,7 @@
               <string>方位采样间隔</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_xmax_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_U10">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -559,7 +559,7 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>50.000000000000000</double>
+              <double>20.000000000000000</double>
              </property>
             </widget>
             <widget class="QLabel" name="label_xmax_2">
@@ -578,7 +578,7 @@
               <string>海面以上10m风速</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_dx_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_dTheta">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -606,7 +606,7 @@
               <double>1.000000000000000</double>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_xmin_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_alpha">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -622,16 +622,16 @@
               <string notr="true"/>
              </property>
              <property name="minimum">
-              <double>-10000000000000000000.000000000000000</double>
+              <double>-360.000000000000000</double>
              </property>
              <property name="maximum">
-              <double>100000000000000000000.000000000000000</double>
+              <double>360.000000000000000</double>
              </property>
              <property name="singleStep">
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>-50.000000000000000</double>
+              <double>45.000000000000000</double>
              </property>
             </widget>
             <widget class="QLabel" name="label_xmin_2">
@@ -647,7 +647,7 @@
               <string>主浪方向</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_ymin_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_tmin">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -663,7 +663,7 @@
               <string notr="true"/>
              </property>
              <property name="minimum">
-              <double>-10000000000000000000.000000000000000</double>
+              <double>0.000000000000000</double>
              </property>
              <property name="maximum">
               <double>100000000000000000000.000000000000000</double>
@@ -672,7 +672,7 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>-50.000000000000000</double>
+              <double>0.000000000000000</double>
              </property>
             </widget>
             <widget class="QLabel" name="label_ymax_2">
@@ -688,7 +688,7 @@
               <string>tmax</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_ymax_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_tmax">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -710,7 +710,7 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>50.000000000000000</double>
+              <double>1000.000000000000000</double>
              </property>
             </widget>
             <widget class="QLabel" name="label_ymin_2">
@@ -739,7 +739,7 @@
               <string>Dt</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_dy_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_dt">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -764,7 +764,7 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>1.000000000000000</double>
+              <double>500.000000000000000</double>
              </property>
             </widget>
             <widget class="QLabel" name="label_zmin_2">
@@ -806,7 +806,7 @@
               <string>重力加速度</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_dz_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_dOmega">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -831,10 +831,10 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>1.000000000000000</double>
+              <double>0.010000000000000</double>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_zmax_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_gravity">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -856,10 +856,10 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>10.000000000000000</double>
+              <double>9.800000000000001</double>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="doubleSpinBox_zmin_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_omega2">
              <property name="enabled">
               <bool>true</bool>
              </property>
@@ -884,7 +884,100 @@
               <double>1.000000000000000</double>
              </property>
              <property name="value">
-              <double>0.000000000000000</double>
+              <double>3.000000000000000</double>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="groupBox_Variables_4">
+            <property name="geometry">
+             <rect>
+              <x>1230</x>
+              <y>0</y>
+              <width>311</width>
+              <height>111</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>其他参数</string>
+            </property>
+            <widget class="QLabel" name="label_file1">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>70</y>
+               <width>71</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>流速文件</string>
+             </property>
+            </widget>
+            <widget class="QLabel" name="label_file2">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>101</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>波浪文件</string>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="lineEdit">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>30</y>
+               <width>113</width>
+               <height>21</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QLineEdit" name="lineEdit_2">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>70</y>
+               <width>113</width>
+               <height>21</height>
+              </rect>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="geometry">
+              <rect>
+               <x>210</x>
+               <y>25</y>
+               <width>71</width>
+               <height>32</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>保存</string>
+             </property>
+             <property name="icon">
+              <iconset resource="Icons/icons.qrc">
+               <normaloff>:/Icons/filesave.png</normaloff>:/Icons/filesave.png</iconset>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="geometry">
+              <rect>
+               <x>210</x>
+               <y>65</y>
+               <width>71</width>
+               <height>32</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>保存</string>
+             </property>
+             <property name="icon">
+              <iconset resource="Icons/icons.qrc">
+               <normaloff>:/Icons/filesave.png</normaloff>:/Icons/filesave.png</iconset>
              </property>
             </widget>
            </widget>
@@ -1235,7 +1328,7 @@ QPushButton:hover{
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1609</width>
+     <width>1780</width>
      <height>24</height>
     </rect>
    </property>

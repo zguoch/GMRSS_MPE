@@ -21,6 +21,21 @@
 // #include <conio.h>
 #include <time.h>
 #include <memory.h>
+#include <string>
+
+// 所需参数的结构体
+struct Par_OceanWave
+{
+    double xmin,dx,xmax,ymin,dy,ymax,zmin,dz,zmax; //X,Y,Z方向空间范围和采样间隔(m)
+    double tmin, dt, tmax; //时间方向范围和采样间隔(s)
+    double gravity;
+    double alpha; //主浪方向(度)
+    double omega2; //最大角频率(rad/s)
+    double dOmega; //角频率采样间隔(rad/s)
+    double dTheta; //方位采样间隔(度)
+    double U10; //海面以上10米高度风速(m/s)
+    std::string fname_WaveHeight, fname_SeawaterVelocity; //数据输出的文件名
+};
 
 // 服从均匀分布的随机数生成函数
 double uniform(double a, double b);

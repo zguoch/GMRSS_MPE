@@ -61,35 +61,37 @@ using namespace std;
 namespace GMRSS_MPEbash
 {                                                                                            
     bool bash_run(int argc, char** argv);
-    // calculation mode: 0d, 1d, 2d, 3d
-    #define CALCULATION_MODE_SINGLEPOINT 0
-    #define CALCULATION_MODE_ONEDIMENSION 1
-    #define CALCULATION_MODE_TWODIMENSION 2
-    #define CALCULATION_MODE_THREEDIMENSION 3
     
-    // variable selection
-    #define VARIABLE_SELECTION_PTX 0
-    #define VARIABLE_SELECTION_PHX 1
-    #define VARIABLE_SELECTION_T 2
-    #define VARIABLE_SELECTION_P 3
-    #define VARIABLE_SELECTION_X 4
-    #define VARIABLE_SELECTION_H 5
-    #define VARIABLE_SELECTION_PT 6
-    #define VARIABLE_SELECTION_PX 7
-    #define VARIABLE_SELECTION_TX 8
-    #define VARIABLE_SELECTION_PH 9
-    #define VARIABLE_SELECTION_HX 10
+    #define MODULE_OceanWave 0
+    #define MODULE_Tail 1
+    #define MODULE_OceanCurrent 2
 
+    #define MODULE_OceanWave_Name "OceanWave"
+    #define MODULE_Tail_Name "Tail"
+    #define MODULE_OceanCurrent_Name "OceanCurrent"
     class cGMRSS_MPEarg
     {
     private:
-        
+        bool m_havet, m_haveO, m_haveR, m_haveA, m_haveM, m_haveT, m_haveg, m_haveU;
+        int m_ModuleIndex, m_threadNumOMP;
+        std::string m_valueO, m_ModuleName;
+        std::vector<std::string> m_ModuleNames, m_valueR_str, m_valueM_str;
+        double m_valueA, m_valueU, m_valueg, m_valueT;
     public:
         cGMRSS_MPEarg(/* args */);
         ~cGMRSS_MPEarg();
-        Par_OceanWave m_para_OceanWave;
+        OCEANWAVE::Par_OceanWave m_para_OceanWave;
         bool Parse(int argc, char** argv); //Parse arguments
+        bool Validate(); // validate arguments and print corresponding error information
+        bool Validate_OceanWave();
         void runOceanWave();
+        bool Validate_Tail();
+        bool Validate_OceanCurrent();
+    private: 
+        bool GetOptionValue(int opt, char* optarg, double& value);
+        bool isNum(string str);
+        int getModuleName(std::string optarg);
+        vector<string> string_split (string s, string delimiter);
     };
    
     static void StartText()

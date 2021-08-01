@@ -288,28 +288,8 @@ int MainWindow::doOceanWave()
 	// 开始计算模拟波高数据
     printf("\nCalculating process : 1234");
 	time(&start);
-    // for (size_t kk = 0; kk < 3; kk++)
-    // {
-    //     // ui->roundProgressBar->setRange(0,100);
-    //     omp_set_num_threads(8);
-    //     double ind=0;
-    //     #pragma omp parallel for
-    //     for(int i=0;i<100;i++)
-    //     {
-    //         QElapsedTimer t;
-    //         t.start();
 
-
-    //         #pragma omp critical
-    //         // cout<<i<<std::endl;;
-    //         while(t.elapsed()<1000);
-    //         ind++;
-    //         // ui->roundProgressBar->setValue(ind);
-    //     }
-    // }
-    
-    
-    // omp_set_num_threads(m_threadNumOMP);
+    omp_set_num_threads(m_threadNumOMP);
 	for(it=0;it<Nt;it++)
     {
 		nProcess=(long)((it+1)*100/Nt);
@@ -318,7 +298,7 @@ int MainWindow::doOceanWave()
 		t=t1+it*d_t;
         ui->roundProgressBar->setRange(0,Ny);
         int ind=0;
-        #pragma omp parallel for shared(omega1, d_omega, gravity,d_theta,theta1)
+        #pragma omp parallel for private(iy, ix, m, n, x, y, sum, omega, k, theta)
 		for(iy=0;iy<Ny;iy++)
 		{
 			y=y1+iy*d_y;
@@ -333,7 +313,7 @@ int MainWindow::doOceanWave()
 					for(n=0;n<N;n++)
 					{
 						theta=theta1+n*d_theta;	
-			// 			sum+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
+						sum+=sqrt(2.0*PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
 					}	
 				}
 				h=sum;

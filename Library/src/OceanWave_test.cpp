@@ -11,7 +11,7 @@
 
 #include "proj.h"
 #include "OceanWave.h"
-
+using namespace OCEANWAVE;
 int main()
 {
 	time_t start,end;

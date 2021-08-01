@@ -283,6 +283,16 @@ int MainWindow::doOceanWave()
     // 对每一个时刻的结果进行保存
     std::vector<std::vector<double> > wave_h(Ny);
     for (size_t i = 0; i < Ny; i++)wave_h[i].resize(Nx);
+    std::vector<std::vector<std::vector<std::vector<double> > > > wave_U(3);
+    for (size_t i = 0; i < 3; i++){
+        wave_U[i].resize(Nz);
+        for (size_t iz = 0; iz < Nz; iz++){
+            wave_U[i][iz].resize(Ny);
+            for (size_t iy = 0; iy < Ny; iy++){
+                wave_U[i][iz][iy].resize(Nx);
+            }
+        }
+    }
     // 开始计算模拟波高数据
     omp_set_num_threads(parm.nThreads);
     ui->roundProgressBar->setRange(0, Ny*Nt);
@@ -326,8 +336,59 @@ int MainWindow::doOceanWave()
             }
         }
         // save result at t
-        OCEANWAVE::SaveResult(parm,wave_h,t);
+        OCEANWAVE::SaveResult(parm,wave_h, wave_U, t, SAVE_RESULT_h);
     }
+    // 开始计算模拟海水速度数据
+    ui->roundProgressBar->setValue(0);
+    ind = 0;
+    ui->roundProgressBar->setRange(0, Nz*Nt);
+    for(it=0;it<Nt;it++)
+    {
+        t=t1+it*d_t;
+        #pragma omp parallel for private(iz, iy, ix, m, n, omega, k, theta, z, y, x, sumx, sumy, sumz, Vx, Vy, Vz)
+        for(iz=0;iz<Nz;iz++)
+        {
+            z=z1+iz*d_z;
+            for(iy=0;iy<Ny;iy++)
+            {
+                y=y1+iy*d_y;
+                for(ix=0;ix<Nx;ix++)
+                {
+                    x=x1+ix*d_x;
+                    sumx=0.0;
+                    sumy=0.0;
+                    sumz=0.0;
+                    for(m=0;m<M;m++)
+                    {
+                        omega=omega1+m*d_omega;
+                        k=omega*omega/gravity;
+                        for(n=0;n<N;n++)
+                        {
+                            theta=theta1+n*d_theta;	
+                            sumx+=sqrt(2.0*OCEANWAVE::PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*exp(-k*z)*omega*cos(theta)*sin(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
+                            sumy+=sqrt(2.0*OCEANWAVE::PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*exp(-k*z)*omega*sin(theta)*sin(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
+                            sumz+=sqrt(2.0*OCEANWAVE::PM2(omega,U19p5,theta-alfa,gravity)*d_omega*d_theta)*exp(-k*z)*omega*cos(k*x*cos(theta)+k*y*sin(theta)-omega*t+num[m][n]);
+                        }	
+                    }
+                    Vx=sumx;
+                    Vy=sumy;
+                    Vz=sumz;
+                    // 输出计算结果
+                    // fprintf(fpOut2,"%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n",x,y,z,t,Vx,Vy,Vz);
+                    wave_U[0][iz][iy][ix] = Vx;
+                    wave_U[1][iz][iy][ix] = Vy;
+                    wave_U[2][iz][iy][ix] = Vz;
+                }
+            }
+            if(parm.showProgress){
+                #pragma omp critical
+                ind++;
+                ui->roundProgressBar->setValue(ind);
+            }
+        }
+        SaveResult(parm,wave_h, wave_U, t, SAVE_RESULT_U);
+    }
+    
     //release pointer
     delete[] num[0]; 
     delete[] num;

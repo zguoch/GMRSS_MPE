@@ -182,7 +182,7 @@ int main()
 					fprintf(fpOut2,"%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\t%.3lf\n",x,y,z,t,Vx,Vy,Vz);
 				}
 			}
-		}
+		} 
 	}
 	fclose(fpOut2);
 	printf("\n\nThe velocity data has been simulated!\n\n");

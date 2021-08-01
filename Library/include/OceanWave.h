@@ -29,6 +29,9 @@ namespace OCEANWAVE
     #define RETURN_RESULTS_NO 0
     #define RETURN_RESULTS_ALL 1
     #define RETURN_RESULTS_LATEST 2
+
+    #define SAVE_RESULT_h 0
+    #define SAVE_RESULT_U 1
     // 所需参数的结构体
     struct Par_OceanWave
     {
@@ -71,13 +74,17 @@ namespace OCEANWAVE
     };
     
     // save data
-    void SaveResult(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    void SaveResult(const Par_OceanWave& parm, const std::vector<std::vector<double> >& h, 
+        const std::vector<std::vector<std::vector<std::vector<double> > > >& U, double t, int h_or_U);
     // -- x,y,data格式
-    void SaveResult_txt(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    void SaveResult_txt(const Par_OceanWave& parm, const std::vector<std::vector<double> >& h,
+        const std::vector<std::vector<std::vector<std::vector<double> > > >& U, double t, int h_or_U);
     // -- rectlinear vtk grid
-    void SaveResult_VTK(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    void SaveResult_VTK(const Par_OceanWave& parm, const std::vector<std::vector<double> >& h, 
+        const std::vector<std::vector<std::vector<std::vector<double> > > >& U, double t, int h_or_U);
     // -- Surfer Grid
-    void SaveResult_grd(const Par_OceanWave& parm, const std::vector<std::vector<double> >& result, double t);
+    void SaveResult_grd(const Par_OceanWave& parm, const std::vector<std::vector<double> >& h, 
+        const std::vector<std::vector<std::vector<std::vector<double> > > >& U, double t, int h_or_U);
     // 计算t0时刻的波高
     double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h);
     // 服从均匀分布的随机数生成函数

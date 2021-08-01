@@ -14,8 +14,8 @@
 #define GMRSS_MPE_MAJOR_VERSION 1
 #define GMRSS_MPE_MINOR_VERSION 0
 #define GMRSS_MPE_PATCH_VERSION 1
-#define GMRSS_MPE_EXTRA_VERSION "-git-8cc1c3b"
-#define GMRSS_MPE_VERSION       "1.0.1-git-8cc1c3b"
+#define GMRSS_MPE_EXTRA_VERSION "-git-b6c7aca"
+#define GMRSS_MPE_VERSION       "1.0.1-git-b6c7aca"
 #define GMRSS_MPE_DATE          "2021-08-01"
 #define GMRSS_MPE_HOST          "zhikuis-MacBook-Pro.local"
 #define GMRSS_MPE_PACKAGER      "zguo"

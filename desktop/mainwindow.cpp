@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 暂时用不到右边的文本框，隐藏掉
     ui->splitter->setSizes(QList<int>() << 1 << 0);
+    // ui->splitter_3->setSizes(QList<int>() << 1 << 5);
     //round progress bar
     ui->roundProgressBar->setVisible(false);
     ui->roundProgressBar->setDecimals(0);

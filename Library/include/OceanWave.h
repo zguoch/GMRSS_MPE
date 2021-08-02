@@ -46,6 +46,7 @@ namespace OCEANWAVE
         std::string fmt_outputFile="txt"; //输出文件格式
         int nThreads = 1;
         bool showProgress = true;
+        bool useSrand = true; //如果使用srand则随机数每次运行程序结果都不一样，如果不使用，则可使每次运行的结果一样，在开发调试过程中使用false比较好进行结果对比
         void print()
         {
             std::cout<<"=========== 海浪模拟所使用参数 ==============\n";
@@ -67,6 +68,7 @@ namespace OCEANWAVE
             std::cout<<"重力加速度: "<<gravity<<" m/s2\n";
             std::cout<<"波浪文件: "<<fname_WaveHeight+"."+fmt_outputFile<<"\n";
             std::cout<<"速度文件: "<<fname_SeawaterVelocity+"."+fmt_outputFile<<"\n";
+            std::cout<<"是否使用运行时随机数(使用srand函数): "<<(useSrand==true ? "是":"否")<<"\n";
             std::cout<<"使用CPU个数: "<<nThreads<<"\n";
             std::cout<<"是否显示进度条: "<<(showProgress==true ? "是":"否")<<"\n";
             std::cout<<"===========================================\n";
@@ -86,6 +88,9 @@ namespace OCEANWAVE
     void SaveResult_grd(const Par_OceanWave& parm, const std::vector<std::vector<double> >& h, 
         const std::vector<std::vector<std::vector<std::vector<double> > > >& U, double t, int h_or_U);
     // 计算t0时刻的波高
+    // 原始版本
+    double WaveHeight_origin(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h);
+    // 优化后的版本
     double WaveHeight(const Par_OceanWave& parm, std::vector<std::vector<std::vector<double> > >& h);
     // 服从均匀分布的随机数生成函数
     double uniform(double a, double b);

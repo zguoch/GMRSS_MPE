@@ -1,3 +1,13 @@
+/**
+ * @file GMRSS_MPEbash.h
+ * @author 杜劲松，郭志馗 (jinsongdu@cug.edu.cn, zguo@geomar.de)
+ * @brief 
+ * @version 0.1
+ * @date 2021-08-02
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #ifndef GMRSS_MPEBASH_H
 #define GMRSS_MPEBASH_H
 #include "GMRSS_MPEVersion.h"
@@ -72,8 +82,8 @@ namespace GMRSS_MPEbash
     class cGMRSS_MPEarg
     {
     private:
-        bool m_havet, m_haveO, m_haveR, m_haveA, m_haveM, m_haveT, m_haveg, m_haveU, m_havef;
-        int m_ModuleIndex, m_threadNumOMP;
+        bool m_havet, m_haveO, m_haveR, m_haveA, m_haveM, m_haveT, m_haveg, m_haveU, m_havef, m_haver;
+        int m_ModuleIndex, m_threadNumOMP, m_valuer;
         std::string m_valueO, m_ModuleName, m_valuef;
         std::vector<std::string> m_ModuleNames, m_valueR_str, m_valueM_str;
         double m_valueA, m_valueU, m_valueg, m_valueT;
@@ -87,6 +97,9 @@ namespace GMRSS_MPEbash
         void runOceanWave();
         bool Validate_Tail();
         bool Validate_OceanCurrent();
+        void StartText();
+        void helpINFO(int index_module=-1);
+        void helpINFO_OceanWave();
     private: 
         bool GetOptionValue(int opt, char* optarg, double& value);
         bool isNum(string str);
@@ -94,99 +107,16 @@ namespace GMRSS_MPEbash
         vector<string> string_split (string s, string delimiter);
     };
    
-    static void StartText()
-    {
-        //30: black  31:red  32:green  33:yellow  34:blue  35:purple  36:darkgreen
-        cout<<COLOR_YELLOW;       //print text in yellow color
-        cout << "***************************************************\n";
-        cout << "*                 program GMRSS_MPE                   *\n";
-        cout << "*                 ~~~~~~~ ~~~~~~~                 *\n";
-        cout << "*  Version: "<<GMRSS_MPE_VERSION<<"                     *\n";
-        cout << "*                                                 *\n";
-        cout << "*  Equation of state of salt-water (H2O-NaCl)     *\n";
-        cout << "*  - Independent variables: PTX, PHX              *\n";
-        cout << "*  - Properties: density, enthalpy, viscosity     *\n";
-        cout << "*  - saturation, salinity, phase diagram          *\n";
-        cout << "*  unit:                                          *\n";
-        cout << "*      temperature-deg.C,        pressure-bar     *\n";
-        cout << "*      salinity-wt. % NaCl,   density-kg/m3       *\n";
-        cout << "*      enthalpy-kJ/kg,        viscosity-Pa s      *\n";
-        cout << "*                                                 *\n";
-        cout << "* (c) Zhikui Guo, GEOMAR, "<<GMRSS_MPE_DATE<<", Kiel        *\n";
-        cout << "*                                                 *\n";
-        cout << "***************************************************\n";
-        cout << "\n";
-        cout<<COLOR_DEFAULT;
-                                                                                                                                                                                                                        
-    }
-    static void helpINFO()
-    {
-        string version=GMRSS_MPE_VERSION;
-        string author="Zhikui Guo";
-        string locus="GEOMAR, Germany";
-        string email="zguo@geomar.de";
-        unsigned int wordWidth=20;
-        // time_t now=time(0);
-        // char* now_str=ctime(&now);
-        string now_str=GMRSS_MPE_DATE;
-
-        //30: black  31:red  32:green  33:yellow  34:blue  35:purple  36:darkgreen
-        cout<<"========================== GMRSS_MPE ==========================="<<std::endl;;
-        cout<<"GMRSS_MPE, a multi-platform program for Salt-Water (H2O-NaCl) Equation of State and thermodynamic properties calculation."<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"Author "<<COLOR_GREEN<<author<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"Locus "<<COLOR_GREEN<<locus<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"Date "<<COLOR_GREEN<<now_str<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"Version "<<COLOR_GREEN<<version<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"Email "<<COLOR_GREEN<<email<<COLOR_DEFAULT<<std::endl;;
-        cout<<"============================================================"<<std::endl;;
-        cout<<COLOR_BLUE<<"Usage: GMRSS_MPE [options]"<<COLOR_DEFAULT<<std::endl;;
-        cout<<"options:"<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -h "<<COLOR_BLUE<<"List descriptions of usage and available arguments"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -v "<<COLOR_BLUE<<"Print GMRSS_MPE version number"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -D "<<COLOR_BLUE<<"Dimension: 0, 1, 2, 3. e.g.: -D2"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -V "<<COLOR_BLUE<<"Select independent variables according to -D arguments."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"     "<<COLOR_DEFAULT<<"Combination of: T, P, X, H. e.g.: -VXT"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -T "<<COLOR_BLUE<<"Set fixed temperature value if T is not in -V option."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -P "<<COLOR_BLUE<<"Set fixed pressure value if P is not in -V option. -P316"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -X "<<COLOR_BLUE<<"Set fixed salinity value if X is not in -V option."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -H "<<COLOR_BLUE<<"Set fixed enthalpy value if H is not in -V option."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -R "<<COLOR_BLUE<<"Set range and interval of variables in -V option, must in the save order with -V option."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"     "<<COLOR_DEFAULT<<"e.g.: -R0/0.001/0.9/0/1/600"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -G "<<COLOR_BLUE<<"Set input filename of PTX or PHX text file for multi-points calculation"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"     "<<COLOR_DEFAULT<<"only used when -V0 and no -P, -X, -T or -H arguments."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"     "<<COLOR_DEFAULT<<"The text file with three columns, PTX or PHX are decided by -V options."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -O "<<COLOR_BLUE<<"Set out put file name, file format is determined by file extension name."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"     "<<COLOR_DEFAULT<<"Supported file format is vtk, csv, txt."<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -n "<<COLOR_BLUE<<"If normalize the result in vtk file. Only valid when -D 3"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -t "<<COLOR_BLUE<<"Set number of thread for parallel computing."<<COLOR_DEFAULT<<std::endl;;
-        cout<<"Units:"<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Temperature "<<COLOR_BLUE<<"Degree Celsius: 273.15 deg.C = 1 K (Kelvin)"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Pressure "<<COLOR_BLUE<<"bar: 1 bar = 1e5 Pa = 0.1 MPa"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Salinity "<<COLOR_BLUE<<"Weight percent in range of [0,1]: seawater is 0.032 = 3.2 wt. % NaCl"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Enthalpy "<<COLOR_BLUE<<"Specific enthalpy: kJ/kg = 1000 J/kg"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Density "<<COLOR_BLUE<<"SI: kg/m3"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Viscosity "<<COLOR_BLUE<<"SI: Pa s"<<COLOR_DEFAULT<<std::endl;;
-        cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  Saturation "<<COLOR_BLUE<<"in range of [0, 1]"<<COLOR_DEFAULT<<std::endl;;
-    }
     static void StartText_artASCII()
     {
-        // cout<<COLOR_GREEN<<"███████╗ █████╗ ██╗  ████████╗██╗    ██╗ █████╗ ████████╗███████╗██████╗     ███████╗ ██████╗ ███████╗\n"
-        // <<"██╔════╝██╔══██╗██║  ╚══██╔══╝██║    ██║██╔══██╗╚══██╔══╝██╔════╝██╔══██╗    ██╔════╝██╔═══██╗██╔════╝\n"
-        // <<"███████╗███████║██║     ██║   ██║ █╗ ██║███████║   ██║   █████╗  ██████╔╝    █████╗  ██║   ██║███████╗\n"
-        // <<"╚════██║██╔══██║██║     ██║   ██║███╗██║██╔══██║   ██║   ██╔══╝  ██╔══██╗    ██╔══╝  ██║   ██║╚════██║\n"
-        // <<"███████║██║  ██║███████╗██║   ╚███╔███╔╝██║  ██║   ██║   ███████╗██║  ██║    ███████╗╚██████╔╝███████║\n"
-        // <<"╚══════╝╚═╝  ╚═╝╚══════╝╚═╝    ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝    ╚══════╝ ╚═════╝ ╚══════╝\n"
-        // <<COLOR_DEFAULT<<std::endl;;  
-        
-        cout<<COLOR_GREEN<<"                              $$$$$$$$\\  $$$$$$\\   $$$$$$\\  \n"
-        <<"                              $$  _____|$$  __$$\\ $$  __$$\\ \n"
-        <<" $$$$$$$\\ $$\\  $$\\  $$\\       $$ |      $$ /  $$ |$$ /  \\__|\n"
-        <<"$$  _____|$$ | $$ | $$ |      $$$$$\\    $$ |  $$ |\\$$$$$$\\  \n"
-        <<"\\$$$$$$\\  $$ | $$ | $$ |      $$  __|   $$ |  $$ | \\____$$\\ \n"
-        <<" \\____$$\\ $$ | $$ | $$ |      $$ |      $$ |  $$ |$$\\   $$ |\n"
-        <<"$$$$$$$  |\\$$$$$\\$$$$  |      $$$$$$$$\\  $$$$$$  |\\$$$$$$  |\n"
-        <<"\\_______/  \\_____\\____/       \\________| \\______/  \\______/ \n"
-        <<COLOR_DEFAULT<<std::endl;;                                                                                                          
+        // see https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=GMRSS%20of%20MPE
+        std::cout<<" ██████╗ ███╗   ███╗██████╗ ███████╗███████╗     ██████╗ ███████╗    ███╗   ███╗██████╗ ███████╗\n"
+                 <<"██╔════╝ ████╗ ████║██╔══██╗██╔════╝██╔════╝    ██╔═══██╗██╔════╝    ████╗ ████║██╔══██╗██╔════╝\n"
+                 <<"██║  ███╗██╔████╔██║██████╔╝███████╗███████╗    ██║   ██║█████╗      ██╔████╔██║██████╔╝█████╗  \n"
+                 <<"██║   ██║██║╚██╔╝██║██╔══██╗╚════██║╚════██║    ██║   ██║██╔══╝      ██║╚██╔╝██║██╔═══╝ ██╔══╝  \n"
+                 <<"╚██████╔╝██║ ╚═╝ ██║██║  ██║███████║███████║    ╚██████╔╝██║         ██║ ╚═╝ ██║██║     ███████╗\n"
+                 <<" ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝     ╚═════╝ ╚═╝         ╚═╝     ╚═╝╚═╝     ╚══════╝\n";
+                                                                                                     
     }
 }
 #endif

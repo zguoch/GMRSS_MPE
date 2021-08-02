@@ -4,6 +4,7 @@ namespace GMRSS_MPEbash
 { 
   bool bash_run(int argc, char** argv)
   {
+    cGMRSS_MPEarg arg;
     if(argc==1)
     {
       #ifdef _WIN32
@@ -13,28 +14,27 @@ namespace GMRSS_MPEbash
         m_currentConsoleAttr = csbi.wAttributes;
         int width = (int)(csbi.srWindow.Right-csbi.srWindow.Left+1);
         // int height = (int)(csbi.srWindow.Bottom-csbi.srWindow.Top+1);
-        if(width>119)
+        if(width>90)
         {
             StartText_artASCII();
         }else
         {
-            StartText();
+            arg.StartText();
         }
       #else
           struct winsize w;
           ioctl(0, TIOCGWINSZ, &w);
-          if(w.ws_col>119)
+          if(w.ws_col>90)
           {
               StartText_artASCII();
           }else
           {
-              StartText();
+              arg.StartText();
           }
       #endif
-      helpINFO();
+      arg.helpINFO();
     }
     //parse arguments and check 
-    cGMRSS_MPEarg arg;
     if(!arg.Parse(argc, argv)) return false;
     if(!arg.Validate()) return false;
     return true;
@@ -42,8 +42,10 @@ namespace GMRSS_MPEbash
 
 
   cGMRSS_MPEarg::cGMRSS_MPEarg(/* args */)
+  :
+  m_valuer(1)
   {
-    m_ModuleNames.resize(5);//暂时先用一个较大的数字
+    m_ModuleNames.resize(3);//暂时先用一个较大的数字
     m_ModuleNames[MODULE_OceanWave]=MODULE_OceanWave_Name; //海浪
     m_ModuleNames[MODULE_Tail]=MODULE_Tail_Name; //尾迹
     m_ModuleNames[MODULE_OceanCurrent]=MODULE_OceanCurrent_Name; //洋流
@@ -52,7 +54,102 @@ namespace GMRSS_MPEbash
   cGMRSS_MPEarg::~cGMRSS_MPEarg()
   {
   }
+  void cGMRSS_MPEarg::StartText()
+  {
+      //30: black  31:red  32:green  33:yellow  34:blue  35:purple  36:darkgreen
+      cout<<COLOR_YELLOW;       //print text in yellow color
+      std::string boundstars="***************************************************";
+      cout << boundstars<<"\n";
+      cout << "*                 GMRSSofMPE 软件                  *\n";
+      cout << "*                 ~~~~~~~ ~~~~~~~                  *\n";
+      cout << "*                                                  *\n";
+      cout << "*  海洋物理环境重磁响应模拟系统，包含如下模块      *\n";
+      for (size_t i = 0; i < m_ModuleNames.size(); i++)
+      {
+          // cout << "*  - "<<m_ModuleNames[i]<<"              *\n";
+          printf("*  - %-45s *\n",m_ModuleNames[i].c_str());
+      }
+      cout << boundstars<<"\n";
+      cout << "\n";
+      cout<<COLOR_DEFAULT;
+                                                                                                                                                                                                                      
+  }
+  void cGMRSS_MPEarg::helpINFO_OceanWave()
+  {
+    unsigned int wordWidth=5;
+    cout<<COLOR_BLUE<<"Usage: GMRSSofMPE [模块] [参数]"<<COLOR_DEFAULT<<std::endl;
+    cout<<MODULE_OceanWave_Name<<": 海浪重磁响应模拟"<<std::endl;;
+    cout<<"参数:"<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -h "<<COLOR_BLUE<<"打印帮助信息"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -v "<<COLOR_BLUE<<"打印版本"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -R "<<COLOR_BLUE<<"模拟计算x,y,z,t的范围和采样间隔[m]"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     格式: "<<COLOR_DEFAULT<<"xmin/dx/xmax/ymin/dy/ymax/zmin/dz/zmax/tmin/dt/tmax"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-R -50/1/50/-50/1/50/0/5/10/0/500/1000"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -M "<<COLOR_BLUE<<"角频率采样间隔和最大角频率[rad/s]"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     格式: "<<COLOR_DEFAULT<<"dOmega/omega2"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-M 0.01/3"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -U "<<COLOR_BLUE<<"海面以上10 m的风速(U10)[m/s]"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-U 20"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -A "<<COLOR_BLUE<<"主浪方向(alpha)[度]"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-A 45"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -T "<<COLOR_BLUE<<"方位采样间隔(dTheta)[度]"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-T 1"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -t "<<COLOR_BLUE<<"用于并行计算的CPU个数(默认是1)"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-t 8"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -O "<<COLOR_BLUE<<"输出数据的文件名，指定绝对路径和相对路径均可，不用指定后缀名。"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     格式: "<<COLOR_DEFAULT<<"文件路径/文件名 (不同操作系统的写法可能有差异)"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-O ./test 则会保存出./text_U.[fmt] 和./text_h.[fmt]"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -f "<<COLOR_BLUE<<"指定输出数据文件的类型[fmt]"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     格式: "<<COLOR_DEFAULT<<"txt, grd, vtk的其中之一"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-f txt"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -g "<<COLOR_BLUE<<"重力加速度(默认是9.8)"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-g 9.8"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -r "<<COLOR_BLUE<<"是否使用运行时随机数(默认开启)。如果开启则算法中使用的随机数每次运行都不同。"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     格式: "<<COLOR_DEFAULT<<"0, 1其中之一. 0表示不开启；1表示开启"<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_PURPLE<<"     示例: "<<COLOR_DEFAULT<<"-r 0"<<COLOR_DEFAULT<<std::endl;
+    cout<<setw(wordWidth)<<setiosflags(ios::left)<<COLOR_GREEN<<"使用示例: "<<COLOR_DEFAULT<<"GMRSSofMPE OceanWave  -R -50/1/50/-50/1/50/0/5/10/0/500/1000 -M 0.01/3 -U 20 -A 45 -T 1 -t 8 -O test -f vtk"<<COLOR_DEFAULT<<std::endl;
+    
+  }
+  void cGMRSS_MPEarg::helpINFO(int index_module)
+  {
+      string version=GMRSS_MPE_VERSION;
+      string author="杜劲松, 郭志馗";
+      string locus="中国地质大学(武汉)";
+      string email="jinsongdu@cug.edu.cn; zguo@geomar.de";
+      unsigned int wordWidth=20;
+      // time_t now=time(0);
+      // char* now_str=ctime(&now);
+      string now_str=GMRSS_MPE_DATE;
 
+      //30: black  31:red  32:green  33:yellow  34:blue  35:purple  36:darkgreen
+      cout<<"========================== GMRSSofMPE ==========================================="<<std::endl;
+      cout<<"海洋物理环境重磁响应模拟系统"<<std::endl;
+      cout<<"Gravity and Magnetic Response Simulation System of Marine Physical Environment"<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<"开发者 "<<COLOR_GREEN<<author<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<"单位 "<<COLOR_GREEN<<locus<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<"日期 "<<COLOR_GREEN<<now_str<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<"版本 "<<COLOR_GREEN<<version<<COLOR_DEFAULT<<std::endl;
+      cout<<setw(wordWidth)<<setiosflags(ios::left)<<"开发者E-mail "<<COLOR_GREEN<<email<<COLOR_DEFAULT<<std::endl;
+      cout<<"=================================================================================="<<std::endl;
+      switch (index_module)
+      {
+      case MODULE_OceanWave:
+        helpINFO_OceanWave();
+        break;
+      default:
+        {
+          cout<<COLOR_BLUE<<"Usage: GMRSSofMPE [模块] [参数]"<<COLOR_DEFAULT<<std::endl;
+          cout<<"模块:"<<std::endl;;
+          for (size_t i = 0; i < m_ModuleNames.size(); i++){
+              printf("   %s \n",m_ModuleNames[i].c_str());
+          }
+          cout<<"参数:"<<std::endl;
+          cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -h "<<COLOR_BLUE<<"打印帮助信息"<<COLOR_DEFAULT<<std::endl;
+          cout<<setw(wordWidth)<<setiosflags(ios::left)<<"  -v "<<COLOR_BLUE<<"打印版本"<<COLOR_DEFAULT<<std::endl;
+        }
+        break;
+      }
+  }
   bool cGMRSS_MPEarg::Parse(int argc, char** argv)
   {
     if(argc<2)return false; //there is no arguments
@@ -74,7 +171,7 @@ namespace GMRSS_MPEbash
       argv[1] = const_cast<char*>(have_module);//place holder, nothing to be used
     }
     int opt; 
-    const char *optstring = "f:U:g:T:A:M:R:O:t:vhm"; // set argument templete
+    const char *optstring = "f:U:g:T:A:M:R:O:t:r:vhm"; // set argument templete
     int option_index = 0;
     int valid_args=0;
     double doubleOptValue;
@@ -90,12 +187,17 @@ namespace GMRSS_MPEbash
       switch (opt)
       {
       case 'h':
-        helpINFO();
+        helpINFO(m_ModuleIndex);
         exit(0);
         break;
       case 'v':
         cout<<"Version: "<<VERSION_MAJOR<<"."<<VERSION_MINOR<<endl;
         exit(0);
+        break;
+      case 'r':
+        m_haver = true; //使用srand
+        if(!GetOptionValue(opt, optarg, doubleOptValue))return false;
+        m_valuer=((int)doubleOptValue==0 ? 0 : 1);
         break;
       case 't':
         m_havet=true;
@@ -239,6 +341,7 @@ namespace GMRSS_MPEbash
     {
       m_para_OceanWave.alpha = m_valueA;
     }
+    if(m_haver)m_para_OceanWave.useSrand = m_valuer;
     m_para_OceanWave.print();
     // 参数没问题那就运行吧
     std::vector<std::vector<std::vector<double> > > tmp_h;

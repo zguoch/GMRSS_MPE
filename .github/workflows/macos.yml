@@ -1,7 +1,7 @@
 name: MacOS
 on: 
   push:
-    branches: masterxx
+    branches: master
     tags:
       - 'V*'
 jobs:
@@ -53,20 +53,20 @@ jobs:
         run: |
           mkdir Library/build
           cd Library/build
-          cmake ..
+          cmake -DCMAKE_BUILD_TYPE=Release ..
           make install
           cd ../..
       - name: build command line app
         run: |
           mkdir -p commandline/build
           cd commandline/build
-          cmake ..
+          cmake -DCMAKE_BUILD_TYPE=Release ..
           make 
       - name: build desktop app
         run: |
           mkdir -p desktop/build
           cd desktop/build
-          cmake -DQt5_DIR=${QT_DIR}/lib/cmake/Qt5 -DVTK_DIR=/usr/local/opt/vtk@8.2/lib/cmake/vtk-8.2  -DCMAKE_INSTALL_PREFIX=./install ..
+          cmake -DCMAKE_BUILD_TYPE=Release -DQt5_DIR=${QT_DIR}/lib/cmake/Qt5 -DVTK_DIR=/usr/local/opt/vtk@8.2/lib/cmake/vtk-8.2  -DCMAKE_INSTALL_PREFIX=./install ..
           make 
           ${QT_DIR}/bin/macdeployqt GMRSSofMPE.app
           make install

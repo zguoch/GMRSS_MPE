@@ -30,6 +30,7 @@ macro(set_config_option VARNAME STRING)
 endmacro()
 opt(OpenMP "Enable OpenMP to parallel computing" ON)
 option(USE_VTK "whether use VTK library" ON)
+set(GMRSS_MPE_DIR "../Library")
 set(GMRSS_MPE_LIB_PATH "../Library/lib")
 set(GMRSS_MPE_LIB_NAME "GMRSS_MPE")
 
@@ -174,7 +175,7 @@ if (USE_VTK)
 endif()
 
 # add H2ONaCl source and library 
-include_directories(../Library/include ../commandline)
+include_directories(${GMRSS_MPE_DIR}/include ${GMRSS_MPE_DIR}/src ../commandline)
 link_directories(${GMRSS_MPE_LIB_PATH} "/usr/local/lib" "${Qt5_DIR}/../../../lib")
 FILE(GLOB HDRS_GMRSS_MPE_Library "${PROJECT_SOURCE_DIR}/../Library/include/*.h" "${PROJECT_SOURCE_DIR}/../Library/include/*.H")
 FILE(GLOB GMRSS_MPE_LIB_FILE "${GMRSS_MPE_LIB_PATH}/*${GMRSS_MPE_LIB_NAME}*")

@@ -122,6 +122,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{env.HOME}}/desktop/build/${{env.AppInstaller}}.exe
-          asset_name: ${{env.HOME}}/desktop/build/${{env.AppInstaller}}.exe
+          asset_name: ${{env.AppInstaller}}.exe
           tag: ${{ github.ref }}
           overwrite: true

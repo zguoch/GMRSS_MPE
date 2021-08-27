@@ -118,12 +118,38 @@ void MainWindow::busy_job()
                     }
                 }
                 break;
+            case INDEX_OCEANWAVE_GRAV:
+                {
+                    ui->pushButton->setVisible(true);
+                    ui->roundProgressBar->setVisible(false);
+                    QMessageBox msgBox;
+                    msgBox.setWindowTitle(tr("Information"));
+                    msgBox.setText(ui->tabWidget->tabText(index_tab)+tr("-重力模拟: 正在开发中..."));
+                    msgBox.setStandardButtons(QMessageBox::Yes);
+                    msgBox.setDefaultButton(QMessageBox::Yes);
+                    msgBox.exec();
+                }
+                break;
+            case INDEX_OCEANWAVE_MAG:
+                {
+                    ui->pushButton->setVisible(true);
+                    ui->roundProgressBar->setVisible(false);
+                    QMessageBox msgBox;
+                    msgBox.setWindowTitle(tr("Information"));
+                    msgBox.setText(ui->tabWidget->tabText(index_tab)+tr("-磁力模拟: 正在开发中..."));
+                    msgBox.setStandardButtons(QMessageBox::Yes);
+                    msgBox.setDefaultButton(QMessageBox::Yes);
+                    msgBox.exec();
+                }
+                break;
             default:
                 break;
             }
         }
         break;
     default:
+        ui->pushButton->setVisible(true);
+        ui->roundProgressBar->setVisible(false);
         QMessageBox msgBox;
         msgBox.setWindowTitle(tr("Information"));
         msgBox.setText(ui->tabWidget->tabText(index_tab)+tr(": 正在开发中..."));
@@ -176,6 +202,7 @@ int MainWindow::getIndex_OceanWave_Grav_Mag()
 {
     if(ui->radioButton_6->isChecked()){return INDEX_OCEANWAVE_WAVE;}
     else if(ui->radioButton_7->isChecked()) {return INDEX_OCEANWAVE_GRAV;}
+    else if(ui->radioButton_8->isChecked()) {return INDEX_OCEANWAVE_MAG;}
 
     return -1;
 }
